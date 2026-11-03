@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Historial de Ventas por Sucursal</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow-x:hidden;
+    padding-top: 150px; 
+}
+
+/* ====== BARRA SUPERIOR TRIPLE ====== */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.barra-principal {
+    height: 60px;
+    background: #2f2f2f;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.barra-modo-admin {
+    height: 25px;
+    background: #000000;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #c89b2b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.barra-modo-admin p {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.barra-subnavegacion {
+    height: 45px;
+    background: #232323;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    border-bottom: 1px solid #111;
+    padding: 0 10%;
+}
+
+.barra-subnavegacion a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: 0.2s;
+}
+
+.barra-subnavegacion a:hover { color: #fff; }
+
+.barra-subnavegacion a.sub-activo { color: #fff; }
+.barra-subnavegacion a.sub-activo::after {
+    content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: #dfb142;
+}
+
+.logo{
+    display:flex; align-items:center; justify-content:flex-start; height:100%; margin-left:-15px;
+}
+.logo a{ display:flex; align-items:center; text-decoration:none; }
+.logo img{
+    height:240px; width:auto; object-fit:contain; display:block; transform:translateY(22px); cursor:pointer;
+}
+
+nav{ margin-left:auto; margin-right:40px; }
+nav ul{ display:flex; list-style:none; gap:50px; }
+nav ul li a{
+    position:relative; color:#fff; text-decoration:none; font-size:16px; font-weight:bold; padding-bottom:6px; transition:.3s; text-transform: uppercase;
+}
+nav ul li a::after{
+    content:""; position:absolute; left:0; bottom:0; width:0; height:3px; background:#c89b2b; transition:.3s;
+}
+nav ul li a:hover::after{ width:100%; }
+nav ul li a:hover, nav ul li.activo a{ color:#c89b2b; text-shadow:0 0 10px #f4d35e; }
+nav ul li.activo a::after{ width:100%; }
+
+.iconos-derecha{ display:flex; align-items:center; gap:15px; }
+.iconos-derecha img{ width:55px; height:55px; object-fit:contain; cursor:pointer; transition:.3s; }
+.iconos-derecha img:hover{ transform:scale(1.1); }
+
+/* ====== INTERFAZ DEL HISTORIAL ====== */
+.seccion-historial {
+    width: 100%;
+    max-width: 1350px;
+    padding: 20px;
+    z-index: 2;
+    margin-top: 10px;
+}
+
+.contenedor-historial {
+    background: #d1d1d1;
+    border-radius: 12px;
+    padding: 30px 25px;
+    color: #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.contenedor-historial h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    color: #000;
+}
+
+/* Filtros superiores agrupados */
+.filtros-superiores {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 25px;
+    background: rgba(0,0,0,0.05);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.control-grupo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-grupo label {
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.control-grupo select, .control-grupo input[type="week"] {
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border: 3px solid #000;
+    background: #fff;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+}
+
+.tabla-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+.tabla-historial {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 4px solid #000000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tabla-historial th {
+    background: #dfb142;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 15px 8px;
+    border: 2px solid #000000;
+    text-align: center;
+    position: relative;
+}
+
+/* Botón para remover columnas personalizadas */
+.btn-eliminar-columna {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #000;
+    color: #fff;
+    border: none;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.btn-eliminar-columna:hover { background: #d32f2f; }
+
+.tabla-historial td {
+    border: 2px solid #000000;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    height: 52px;
+    background: #fff;
+}
+
+.tabla-historial td.col-dia {
+    background: #1c1c1c;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    width: 160px;
+}
+
+.tabla-historial input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+    outline: none;
+}
+.tabla-historial input:focus {
+    background: rgba(223, 177, 66, 0.2);
+}
+
+.fila-inferior-tabla {
+    display: flex;
+    margin-top: -4px;
+}
+
+.bloque-mes {
+    background: #dfb142;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 12px 35px;
+    border: 4px solid #000000;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    font-size: 15px;
+}
+
+.pie-historial {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn-editar-historial {
+    background: #1c1c1c;
+    color: #fff;
+    border: none;
+    padding: 11px 35px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.btn-editar-historial:hover {
+    background: #dfb142;
+    color: #000;
+}
+.btn-guardar-estructura {
+    background: #2e7d32;
+    display: none;
+}
+.btn-guardar-estructura:hover { background: #1b5e20; color: #fff; }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="barra-principal">
+        <div class="logo"><a href="ADMIN.html"><img src="logo.png" alt="Logo"></a></div>
+        <nav>
+            <ul>
+                <li><a href="RECETAS.html">RECETAS</a></li>
+                <li class="activo"><a href="HISTORIAL.html">HISTORIAL</a></li>
+                <li><a href="PEDIDOS.html">PEDIDOS</a></li>
+            </ul>
+        </nav>
+        <div class="iconos-derecha">
+            <a href="LOGIN.html"><img src="login.png" alt="Perfil Admin"></a>
+        </div>
+    </div>
+    <div class="barra-modo-admin">
+        <p>Modo Administrador</p>
+    </div>
+    <div class="barra-subnavegacion">
+        <a href="ALMACEN.html">ALMACEN</a>
+        <a href="HVENTAS.html" class="sub-activo">HISTORIAL DE VENTAS</a>
+        <a href="SUCURSALES.html">SUCURSALES</a>
+    </div>
+</header>
+
+<main class="seccion-historial">
+    <div class="contenedor-historial">
+        <h1 id="titulo-panel">Historial de Ventas</h1>
+        
+        <div class="filtros-superiores">
+            <div class="control-grupo">
+                <label for="selector-sucursal">Sucursal:</label>
+                <select id="selector-sucursal" onchange="cambiarSucursal(this.value)">
+                    <!-- Dinámico -->
+                </select>
+            </div>
+            
+            <div class="control-grupo">
+                <label for="selector-semana">Semana:</label>
+                <input type="week" id="selector-semana" onchange="cambiarSemana(this.value)">
+            </div>
+        </div>
+        
+        <div class="tabla-wrapper">
+            <table class="tabla-historial">
+                <thead>
+                    <tr id="cabecera-tabla">
+                        <!-- Estructura de columnas dinámica -->
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla-historial">
+                    <!-- Dinámico -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="fila-inferior-tabla">
+            <div class="bloque-mes" id="etiqueta-mes">---</div>
+        </div>
+
+        <div class="pie-historial">
+            <button class="btn-editar-historial" id="btn-agregar-col" onclick="agregarColumna()" style="display:none;">+ Añadir Columna</button>
+            <button class="btn-editar-historial" id="btn-control-columnas" onclick="alternarModoColumnas()">Modificar Columnas</button>
+            <button class="btn-editar-historial btn-guardar-estructura" id="btn-guardar-col" onclick="guardarEstructuraColumnas()">Guardar Columnas</button>
+            <button class="btn-editar-historial" id="btn-control-historial" onclick="alternarEdicionHistorial()">Editar Valores</button>
+        </div>
+    </div>
+</main>
+
+<script>
+if (localStorage.getItem('esAdmin') !== 'true' || localStorage.getItem('sesionActiva') !== 'true') {
+    alert("❌ Acceso denegado.");
+    window.location.href = "LOGIN.html";
+}
+
+let sucursalActualIdx = 0;
+let semanaActualKey = ""; 
+let modoEdicion = false;
+let modoEdicionColumnas = false;
+const nombresDias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
+
+// Configuración de las columnas base iniciales del sistema
+const columnasBaseSistema = [
+    { id: "total_ventas", titulo: "Total de Ventas", automatica: true },
+    { id: "cant_productos", titulo: "Cantidad de Productos Vendidos", automatica: true },
+    { id: "gastos", titulo: "Gastos", automatica: true },
+    { id: "ganancias", titulo: "Ganancias", automatica: true },
+    { id: "ingresos_netos", titulo: "Ingresos Netos", automatica: true },
+    { id: "inventario", titulo: "Inventario Utilizado", automatica: true },
+    { id: "promedio1", titulo: "Promedio de Ventas", automatica: true },
+    { id: "promedio2", titulo: "Promedio de Ventas", automatica: true }
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Si no existen las columnas en LocalStorage, establecer las predeterminadas
+    if (!localStorage.getItem('columnasConfigHistorial')) {
+        localStorage.setItem('columnasConfigHistorial', JSON.stringify(columnasBaseSistema));
+    }
+    inicializarFiltros();
+});
+
+function inicializarFiltros() {
+    let baseDatosSucursales = JSON.parse(localStorage.getItem('datosSucursalesAngelotes'));
+    const selector = document.getElementById('selector-sucursal');
+    selector.innerHTML = "";
+
+    if (!baseDatosSucursales || baseDatosSucursales.length === 0) {
+        baseDatosSucursales = [
+            { nombre: "Angelotes" },
+            { nombre: "Angelotes Centro" },
+            { nombre: "Angelotes Zona Dorada" }
+        ];
+        localStorage.setItem('datosSucursalesAngelotes', JSON.stringify(baseDatosSucursales));
+    }
+
+    baseDatosSucursales.forEach((sucursal, index) => {
+        selector.innerHTML += `<option value="${index}">${sucursal.nombre}</option>`;
+    });
+
+    const hoy = new Date();
+    semanaActualKey = obtenerStringSemana(hoy);
+    document.getElementById('selector-semana').value = semanaActualKey;
+
+    sucursalActualIdx = 0;
+    cargarTablaHistorial();
+}
+
+function cambiarSucursal(idx) {
+    desactivarModos();
+    sucursalActualIdx = parseInt(idx, 10);
+    cargarTablaHistorial();
+}
+
+function cambiarSemana(codigoSemana) {
+    if(!codigoSemana) return;
+    desactivarModos();
+    semanaActualKey = codigoSemana;
+    cargarTablaHistorial();
+}
+
+function desactivarModos() {
+    modoEdicion = false;
+    modoEdicionColumnas = false;
+    
+    const btnValores = document.getElementById('btn-control-historial');
+    btnValores.textContent = "Editar Valores";
+    btnValores.style.background = "#1c1c1c";
+    btnValores.style.display = "block";
+
+    document.getElementById('btn-control-columnas').style.display = "block";
+    document.getElementById('btn-agregar-col').style.display = "none";
+    document.getElementById('btn-guardar-col').style.display = "none";
+}
+
+function cargarTablaHistorial() {
+    let registrosGlobales = JSON.parse(localStorage.getItem(`historial_sucursal_${sucursalActualIdx}`)) || {};
+    const fechasDeLaSemana = calcularFechasDeSemana(semanaActualKey);
+    
+    document.getElementById('etiqueta-mes').textContent = fechasDeLaSemana.mesAñoLabel;
+
+    // Asegurar estructura interna base para la semana si no existe
+    if (!registrosGlobales[semanaActualKey]) {
+        registrosGlobales[semanaActualKey] = nombresDias.map((dia, idx) => ({
+            dia_label: `${dia}/${fechasDeLaSemana.dias[idx]}`,
+            total_ventas: "", cant_productos: "", gastos: "", ganancias: "", ingresos_netos: "", inventario: "", promedio1: "", promedio2: ""
+        }));
+        localStorage.setItem(`historial_sucursal_${sucursalActualIdx}`, JSON.stringify(registrosGlobales));
+    }
+
+    const registrosSemana = registrosGlobales[semanaActualKey];
+    const columnasConfig = JSON.parse(localStorage.getItem('columnasConfigHistorial'));
+
+    // 1. Renderizar Cabecera Dinámica
+    const cabecera = document.getElementById('cabecera-tabla');
+    let cabeceraHTML = `<th style="width: 14%;">Día / Fecha</th>`;
+    
+    columnasConfig.forEach(col => {
+        cabeceraHTML += `
+            <th id="th-${col.id}">
+                ${col.titulo}
+                ${!col.automatica ? `<button class="btn-eliminar-columna" onclick="eliminarColumna('${col.id}')" style="display:${modoEdicionColumnas ? 'flex' : 'none'}">&times;</button>` : ''}
+            </th>
+        `;
+    });
+    cabecera.innerHTML = cabeceraHTML;
+
+    // 2. Renderizar Filas de Datos
+    const tbody = document.getElementById('cuerpo-tabla-historial');
+    tbody.innerHTML = "";
+
+    registrosSemana.forEach((item, index) => {
+        let diaTextoActualizado = `${nombresDias[index]}/${fechasDeLaSemana.dias[index]}`;
+        let filaHTML = `<td class="col-dia">${diaTextoActualizado}</td>`;
+
+        columnasConfig.forEach(col => {
+            let valorActual = item[col.id] !== undefined ? item[col.id] : "";
+
+            if (modoEdicion) {
+                // En modo edición de valores permitimos modificar campos base y adicionales
+                filaHTML += `<td><input type="text" data-index="${index}" data-campo="${col.id}" value="${valorActual}"></td>`;
+            } else {
+                // Modo vista regular
+                filaHTML += `<td>${valorActual}</td>`;
+            }
+        });
+
+        tbody.innerHTML += `<tr>${filaHTML}</tr>`;
+    });
+}
+
+/* ====== SECCIÓN: MODIFICAR COLUMNAS EN CALIENTE ====== */
+function alternarModoColumnas() {
+    modoEdicionColumnas = true;
+    modoEdicion = false;
+    
+    document.getElementById('btn-agregar-col').style.display = "block";
+    document.getElementById('btn-guardar-col').style.display = "block";
+    document.getElementById('btn-control-columnas').style.display = "none";
+    document.getElementById('btn-control-historial').style.display = "none";
+    
+    cargarTablaHistorial();
+}
+
+function agregarColumna() {
+    let titulo = prompt("Escriba el nombre de la nueva columna para el historial:");
+    if (!titulo || titulo.trim() === "") return;
+
+    let columnasConfig = JSON.parse(localStorage.getItem('columnasConfigHistorial'));
+    let nuevoId = "custom_col_" + Date.now();
+
+    columnasConfig.push({ id: nuevoId, titulo: titulo.trim(), automatica: false });
+    localStorage.setItem('columnasConfigHistorial', JSON.stringify(columnasConfig));
+    
+    // Sincronizar estructuralmente las semanas existentes de esta sucursal para que contengan la nueva propiedad
+    let registrosGlobales = JSON.parse(localStorage.getItem(`historial_sucursal_${sucursalActualIdx}`)) || {};
+    if (registrosGlobales[semanaActualKey]) {
+        registrosGlobales[semanaActualKey].forEach(fila => {
+            if (fila[nuevoId] === undefined) fila[nuevoId] = "";
+        });
+        localStorage.setItem(`historial_sucursal_${sucursalActualIdx}`, JSON.stringify(registrosGlobales));
+    }
+
+    cargarTablaHistorial();
+}
+
+function eliminarColumna(id) {
+    if (confirm("¿Desea eliminar permanentemente esta columna personalizada?")) {
+        let columnasConfig = JSON.parse(localStorage.getItem('columnasConfigHistorial'));
+        columnasConfig = columnasConfig.filter(col => col.id !== id);
+        localStorage.setItem('columnasConfigHistorial', JSON.stringify(columnasConfig));
+        
+        cargarTablaHistorial();
+    }
+}
+
+function guardarEstructuraColumnas() {
+    modoEdicionColumnas = false;
+    document.getElementById('btn-agregar-col').style.display = "none";
+    document.getElementById('btn-guardar-col').style.display = "none";
+    document.getElementById('btn-control-columnas').style.display = "block";
+    document.getElementById('btn-control-historial').style.display = "block";
+    
+    cargarTablaHistorial();
+    alert("✔️ Estructura de columnas guardada.");
+}
+
+/* ====== SECCIÓN: EDITAR VALORES DE CELDAS ====== */
+function alternarEdicionHistorial() {
+    const btn = document.getElementById('btn-control-historial');
+    
+    if (!modoEdicion) {
+        modoEdicion = true;
+        btn.textContent = "Guardar Valores";
+        btn.style.background = "#2e7d32";
+        document.getElementById('btn-control-columnas').style.display = "none";
+        cargarTablaHistorial();
+    } else {
+        let registrosGlobales = JSON.parse(localStorage.getItem(`historial_sucursal_${sucursalActualIdx}`));
+        const inputs = document.querySelectorAll('#cuerpo-tabla-historial input');
+        
+        inputs.forEach(input => {
+            const idx = input.getAttribute('data-index');
+            const campo = input.getAttribute('data-campo');
+            registrosGlobales[semanaActualKey][idx][campo] = input.value.trim();
+        });
+
+        localStorage.setItem(`historial_sucursal_${sucursalActualIdx}`, JSON.stringify(registrosGlobales));
+        
+        modoEdicion = false;
+        btn.textContent = "Editar Valores";
+        btn.style.background = "#1c1c1c";
+        document.getElementById('btn-control-columnas').style.display = "block";
+        cargarTablaHistorial();
+        alert("✔️ Valores del historial actualizados correctamente.");
+    }
+}
+
+/* ====== UTILERÍA DE TIEMPOS ====== */
+function obtenerStringSemana(d) {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    const weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+    return `${d.getUTCFullYear()}-W${weekNo.toString().padStart(2, '0')}`;
+}
+
+function calcularFechasDeSemana(semanaStr) {
+    const partes = semanaStr.split("-W");
+    const anio = parseInt(partes[0], 10);
+    const semana = parseInt(partes[1], 10);
+    const primereDiaAnio = new Date(anio, 0, 1);
+    const diasMas = (semana - 1) * 7;
+    const diaSemanaInic = primereDiaAnio.getDay();
+    const ajusteLunes = diaSemanaInic <= 4 ? 1 - diaSemanaInic : 8 - diaSemanaInic;
+    const lunesTarget = new Date(anio, 0, 1 + diasMas + ajusteLunes);
+    
+    let diasArray = [];
+    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+    for (let i = 0; i < 7; i++) {
+        let tempDate = new Date(lunesTarget);
+        tempDate.setDate(lunesTarget.getDate() + i);
+        diasArray.push(tempDate.getDate().toString().padStart(2, '0'));
+    }
+    return {
+        dias: diasArray,
+        mesAñoLabel: `${meses[lunesTarget.getMonth()]} ${lunesTarget.getFullYear()}`
+    };
+}
+</script>
+
+</body>
+</html>

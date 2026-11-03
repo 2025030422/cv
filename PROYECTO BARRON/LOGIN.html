@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Mi Cuenta</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    min-height: 100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow-x:hidden;
+}
+
+/* ====== BARRA SUPERIOR ====== */
+header{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:#2f2f2f;
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    z-index:1000;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    height:100%;
+    margin-left:-15px;
+}
+
+.logo a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.logo img{
+    height:240px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+    transform:translateY(22px);
+    cursor:pointer;
+}
+
+nav{
+    margin-left:auto;
+    margin-right:40px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:60px;
+}
+
+nav ul li a{
+    position:relative;
+    color:#fff;
+    text-decoration:none;
+    font-size:18px;
+    font-weight:bold;
+    padding-bottom:6px;
+    transition:.3s;
+}
+
+nav ul li a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:0;
+    height:3px;
+    background:#c89b2b;
+    transition:.3s;
+}
+
+nav ul li a:hover::after{ width:100%; }
+nav ul li a:hover{ color:#c89b2b; text-shadow:0 0 10px #f4d35e; }
+
+/* ====== ICONOS DERECHOS (LOGIN Y CARRITO) ====== */
+.iconos-derecha{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.iconos-derecha a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.iconos-derecha img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.iconos-derecha img:hover{ transform:scale(1.1); }
+
+/* ====== CONTENEDOR Y EFECTOS DEL CARRITO ====== */
+.contenedor-carrito {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+@keyframes pulsoDorado {
+    0% { filter: drop-shadow(0 0 2px #c89b2b); }
+    50% { filter: drop-shadow(0 0 15px #f4d35e); }
+    100% { filter: drop-shadow(0 0 2px #c89b2b); }
+}
+
+.contenedor-carrito.con-pendientes img {
+    animation: pulsoDorado 2s infinite ease-in-out;
+}
+
+.contador-carrito {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #c89b2b;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #2f2f2f;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.contenedor-carrito.con-pendientes .contador-carrito {
+    opacity: 1;
+}
+
+.micro-ventana-carrito {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    width: 320px;
+    background: #1f1f1f;
+    border: 1px solid #c89b2b;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+    z-index: 2000;
+}
+
+.contenedor-carrito:hover .micro-ventana-carrito {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.micro-ventana-carrito h3 {
+    font-size: 16px;
+    color: #c89b2b;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px;
+    text-align: center;
+}
+
+.lista-mini-productos {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.lista-mini-productos::-webkit-scrollbar { width: 4px; }
+.lista-mini-productos::-webkit-scrollbar-thumb { background: #c89b2b; border-radius: 4px; }
+
+.mini-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #2a2a2a;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.mini-item-info {
+    flex: 1;
+}
+
+.mini-item-nombre {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.mini-item-precio {
+    font-size: 12px;
+    color: #c89b2b;
+}
+
+.mini-item-controles {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mini-btn {
+    background: #3a3a3a;
+    border: none;
+    color: white;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.mini-btn:hover { background: #c89b2b; }
+
+.mini-btn-eliminar {
+    background: #8b2525;
+    font-size: 10px;
+}
+.mini-btn-eliminar:hover { background: #b83232; }
+
+.mini-item-cant {
+    font-size: 13px;
+    font-weight: bold;
+    min-width: 14px;
+    text-align: center;
+}
+
+.mini-total {
+    border-top: 1px solid #333;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.btn-pagar-mini {
+    background: #c89b2b;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, transform 0.1s;
+    font-size: 14px;
+}
+
+.btn-pagar-mini:hover {
+    background: #f4d35e;
+    transform: scale(1.02);
+}
+
+.carrito-vacio-texto {
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+    padding: 15px 0;
+}
+
+/* ====== ELEMENTOS DE INTERFAZ ORIGINALES ====== */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    filter: blur(8px);
+    z-index: 1;
+    transform: scale(1.1);
+}
+
+.contenedor-auth {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 450px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    margin-top: 80px;
+}
+
+.contenedor-auth h2 {
+    font-size: 26px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.linea-dorada {
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c89b2b 30%, #c89b2b 70%, transparent);
+    margin: 0 auto 25px auto;
+}
+
+.grupo-input {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.grupo-input label {
+    display: block;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    color: #ccc;
+}
+
+.grupo-input input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #444;
+    padding: 12px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.grupo-input input:focus {
+    border-color: #c89b2b;
+    box-shadow: 0 0 8px rgba(200, 155, 43, 0.3);
+}
+
+.btn-accion {
+    width: 100%;
+    background: #1c1c1c;
+    color: #fff;
+    border: none;
+    padding: 14px 0;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+.btn-accion:hover { background: #2a2a2a; color: #c89b2b; }
+
+.btn-pedidos {
+    background: #c89b2b;
+    color: #000;
+}
+.btn-pedidos:hover { background: #f4d35e; color: #000; }
+
+.switch-form {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #bbb;
+}
+
+.switch-form a {
+    color: #c89b2b;
+    text-decoration: none;
+    font-weight: bold;
+}
+.switch-form a:hover { text-decoration: underline; }
+
+.seccion-pedidos {
+    margin-top: 25px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 6px;
+    padding: 15px;
+    text-align: left;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: none;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.pedido-item {
+    border-bottom: 1px solid #333;
+    padding: 12px 0;
+}
+.pedido-item:last-child { border-bottom: none; }
+
+.pedido-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #c89b2b;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+.pedido-estado { color: #f4d35e; }
+
+.pedido-productos-lista {
+    font-size: 13px;
+    color: #ddd;
+    margin-left: 5px;
+    line-height: 1.4;
+}
+
+.pedido-total-box {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    text-align: right;
+    border-top: 1px dashed #444;
+    padding-top: 4px;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo"><a href="PAGINA PRINCIPAL.html"><img src="logo.png" alt="Logo"></a></div>
+    <nav>
+        <ul>
+            <li><a href="MENU.html">MENÚ</a></li>
+            <li><a href="CONTACTO.html">CONTACTO</a></li>
+            <li><a href="UBICACION.html">UBICACIÓN</a></li>
+        </ul>
+    </nav>
+    <div class="iconos-derecha">
+        <a href="LOGIN.html"><img src="login.png" alt="Login"></a>
+        
+        <!-- Bloque del Carrito Flotante Homologado -->
+        <div class="contenedor-carrito" id="wrapper-carrito">
+            <a href="CARRITO.html">
+                <img src="carrito.png" alt="Carrito">
+            </a>
+            <div class="contador-carrito" id="micro-contador">0</div>
+            
+            <div class="micro-ventana-carrito">
+                <h3>Tu Pedido</h3>
+                <div class="lista-mini-productos" id="mini-lista-items"></div>
+                <div class="mini-total">
+                    <span>Total:</span>
+                    <span id="mini-precio-total">$0</span>
+                </div>
+                <button class="btn-pagar-mini" onclick="pagarPedido()">Proceder al Pago</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="contenedor-auth" id="bloque-autenticacion">
+</main>
+
+<script>
+let datosRegistroTemporal = null;
+let codigoVerificacionSimulado = null;
+
+// Inicialización de la base de datos limpia de usuarios locales
+if(!localStorage.getItem('usuariosAngelotes')) {
+    localStorage.setItem('usuariosAngelotes', JSON.stringify([
+        { usuario: "Admin", correo: "cliente@angelotes.com", clave: "12345", codigo: "2026010001" }
+    ]));
+}
+
+function inicializarPantalla() {
+    // Redirección inmediata si ya es un Administrador logueado
+    if (localStorage.getItem('sesionActiva') === 'true' && localStorage.getItem('esAdmin') === 'true') {
+        window.location.href = "ADMIN.html";
+        return;
+    }
+
+    const contenedor = document.getElementById('bloque-autenticacion');
+    const sesionActiva = localStorage.getItem('sesionActiva') === 'true';
+
+    if (sesionActiva) {
+        const usuarioActual = localStorage.getItem('usuarioActual') || "Usuario";
+        contenedor.innerHTML = `
+            <h2>Mi Perfil</h2>
+            <div class="linea-dorada"></div>
+            <p style="font-size: 16px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px;">
+                Bienvenido de vuelta, <br><strong style="color: #c89b2b;">${usuarioActual}</strong>
+            </p>
+            
+            <button class="btn-accion btn-pedidos" onclick="alternarPedidos()">Ver Pedidos Pendientes</button>
+            <div id="historial-pedidos" class="seccion-pedidos"></div>
+
+            <button class="btn-accion" style="margin-top: 15px;" onclick="cerrarSesion()">Cerrar Sesión</button>
+        `;
+    } else {
+        mostrarLogin();
+    }
+    // Ejecutar actualización del carrito flotante al iniciar pantalla
+    actualizarInterfazCarrito();
+}
+
+function mostrarLogin() {
+    const contenedor = document.getElementById('bloque-autenticacion');
+    contenedor.innerHTML = `
+        <h2>Iniciar Sesión</h2>
+        <div class="linea-dorada"></div>
+        <div class="grupo-input">
+            <label>Usuario o Correo</label>
+            <input type="text" id="auth-email" placeholder="ejemplo@correo.com o tu usuario">
+        </div>
+        <div class="grupo-input">
+            <label>Contraseña o Clave Única</label>
+            <input type="password" id="auth-password" placeholder="••••••••">
+        </div>
+        <button class="btn-accion" onclick="procesarLogin()">Ingresar</button>
+        <p class="switch-form">¿No tienes cuenta? <a href="#" onclick="mostrarRegistro(); return false;">Regístrate aquí</a></p>
+    `;
+}
+
+function mostrarRegistro() {
+    const contenedor = document.getElementById('bloque-autenticacion');
+    contenedor.innerHTML = `
+        <h2>Crear Cuenta</h2>
+        <div class="linea-dorada"></div>
+        <div class="grupo-input">
+            <label>Nombre de Usuario</label>
+            <input type="text" id="reg-username" placeholder="Elige un apodo único">
+        </div>
+        <div class="grupo-input">
+            <label>Correo Electrónico</label>
+            <input type="email" id="reg-email" placeholder="tu@correo.com">
+        </div>
+        <div class="grupo-input">
+            <label>Contraseña</label>
+            <input type="password" id="reg-password" placeholder="Crea una contraseña">
+        </div>
+        <button class="btn-accion" onclick="generarCodigoSimulado()">Registrarme</button>
+        <p class="switch-form">¿Ya tienes cuenta? <a href="#" onclick="mostrarLogin(); return false;">Inicia sesión</a></p>
+    `;
+}
+
+function mostrarPantallaVerificacion() {
+    const contenedor = document.getElementById('bloque-autenticacion');
+    contenedor.innerHTML = `
+        <h2>Verificación de Cuenta</h2>
+        <div class="linea-dorada"></div>
+        <p style="font-size: 14px; margin-bottom: 20px; color: #ccc; line-height: 1.4;">
+            Escribe el código de verificación temporal de 6 dígitos que apareció en tu pantalla.
+        </p>
+        <div class="grupo-input">
+            <label>Código de Verificación</label>
+            <input type="text" id="input-codigo-verificar" placeholder="000000" maxlength="6" style="text-align: center; font-size: 22px; letter-spacing: 6px; font-weight: bold;">
+        </div>
+        <button class="btn-accion btn-pedidos" onclick="validarCodigoYGuardar()">Validar y Activar Cuenta</button>
+        <button class="btn-accion" style="background: transparent; border: 1px solid #444; font-size: 12px; margin-top: 15px;" onclick="mostrarRegistro()">Volver atrás</button>
+    `;
+}
+
+function generarCodigoSimulado() {
+    const username = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass = document.getElementById('reg-password').value;
+
+    if(!username || !email || !pass) {
+        alert("Por favor, completa todos los campos del formulario.");
+        return;
+    }
+
+    const db = JSON.parse(localStorage.getItem('usuariosAngelotes')) || [];
+    const usuarioRepetido = db.find(u => u.usuario && u.usuario.toLowerCase() === username.toLowerCase());
+    const correoRepetido = db.find(u => u.correo && u.correo.toLowerCase() === email.toLowerCase());
+
+    if (usuarioRepetido) {
+        alert("❌ Este nombre de usuario ya está en uso.");
+        return;
+    }
+    if (correoRepetido) {
+        alert("❌ Este correo electrónico ya está registrado.");
+        return;
+    }
+
+    codigoVerificacionSimulado = String(Math.floor(100000 + Math.random() * 900000));
+    datosRegistroTemporal = { username, email, pass };
+
+    alert(`[SIMULACIÓN DE SISTEMA]\n\nCódigo de verificación generado: ${codigoVerificacionSimulado}\n\nEscríbelo en la siguiente casilla.`);
+    mostrarPantallaVerificacion();
+}
+
+function validarCodigoYGuardar() {
+    const codigoIngresado = document.getElementById('input-codigo-verificar').value.trim();
+
+    if(codigoIngresado !== codigoVerificacionSimulado) {
+        alert("❌ Código inválido. Copia exactamente el número que apareció en la alerta.");
+        return;
+    }
+
+    const db = JSON.parse(localStorage.getItem('usuariosAngelotes')) || [];
+
+    const fechaActual = new Date();
+    const anio = fechaActual.getFullYear(); 
+    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); 
+    const prefijoMesAnio = `${anio}${mes}`; 
+
+    const usuariosDelMes = db.filter(u => u.codigo && u.codigo.startsWith(prefijoMesAnio));
+    const consecutivo = usuariosDelMes.length + 1;
+    const numRegistro = String(consecutivo).padStart(4, '0');
+
+    const codigoGenerado = `${prefijoMesAnio}${numRegistro}`;
+
+    db.push({ 
+        usuario: datosRegistroTemporal.username, 
+        correo: datosRegistroTemporal.email, 
+        codigo: codigoGenerado, 
+        clave: datosRegistroTemporal.pass 
+    });
+    
+    localStorage.setItem('usuariosAngelotes', JSON.stringify(db));
+    
+    alert(`¡Cuenta activada con éxito!\n\nTu Clave Única generada es: ${codigoGenerado}\n\nPuedes entrar usando tu contraseña o este código.`);
+    
+    datosRegistroTemporal = null;
+    codigoVerificacionSimulado = null;
+    
+    mostrarLogin();
+}
+
+function procesarLogin() {
+    const loginInput = document.getElementById('auth-email').value.trim();
+    const passInput = document.getElementById('auth-password').value.trim();
+
+    if(!loginInput || !passInput) {
+        alert("Por favor, llena ambos campos para ingresar.");
+        return;
+    }
+
+    const db = JSON.parse(localStorage.getItem('usuariosAngelotes')) || [];
+
+    const usuarioEncontrado = db.find(u => 
+        (u.usuario && u.usuario.toLowerCase() === loginInput.toLowerCase()) || 
+        (u.correo && u.correo.toLowerCase() === loginInput.toLowerCase())
+    );
+
+    if (usuarioEncontrado) {
+        if (usuarioEncontrado.clave === passInput || usuarioEncontrado.codigo === passInput) {
+            
+            // ====== DETECTAR FILTRO DE ADMINISTRADORES ======
+            // Comprueba si el correo electrónico contiene la palabra '@angelotes'
+            const correoTexto = usuarioEncontrado.correo ? usuarioEncontrado.correo.toLowerCase() : '';
+            const esUsuarioAdmin = usuarioEncontrado.usuario.toLowerCase() === 'admin';
+            
+            if (esUsuarioAdmin || correoTexto.includes('@angelotes')) {
+                localStorage.setItem('sesionActiva', 'true');
+                localStorage.setItem('usuarioActual', usuarioEncontrado.usuario);
+                localStorage.setItem('esAdmin', 'true'); // Flag de seguridad indispensable
+                
+                alert(`👑 ¡Modo Admin Detectado!\nBienvenido al panel, ${usuarioEncontrado.usuario}.`);
+                window.location.href = "ADMIN.html";
+                return;
+            }
+
+            // ====== INGRESO DE CLIENTE REGULAR ======
+            localStorage.setItem('sesionActiva', 'true');
+            localStorage.setItem('usuarioActual', usuarioEncontrado.usuario);
+            localStorage.removeItem('esAdmin'); // Limpieza preventiva para evitar clonación de roles
+
+            if(localStorage.getItem('redirigirAlCarrito') === 'true') {
+                localStorage.removeItem('redirigirAlCarrito');
+                location.href = "CARRITO.html";
+            } else {
+                inicializarPantalla();
+            }
+            return;
+        }
+    }
+
+    alert("❌ Credenciales incorrectas.\n\nVerifica que tu usuario/correo esté bien escrito y usa la contraseña que creaste o tu Clave Única.");
+}
+
+function cerrarSesion() {
+    localStorage.removeItem('sesionActiva');
+    localStorage.removeItem('usuarioActual');
+    localStorage.removeItem('esAdmin');
+    inicializarPantalla();
+}
+
+function alternarPedidos() {
+    const panel = document.getElementById('historial-pedidos');
+    
+    if(panel.style.display === "block") {
+        panel.style.display = "none";
+        return;
+    }
+
+    let usuarioActual = localStorage.getItem('usuarioActual') || '';
+    let todosLosPedidos = JSON.parse(localStorage.getItem('pedidosAngelotes')) || [];
+    
+    let misPedidos = todosLosPedidos.filter(p => p.usuario === usuarioActual);
+
+    panel.innerHTML = "";
+    panel.style.display = "block";
+
+    if(misPedidos.length > 0) {
+        misPedidos.reverse().forEach(pedido => {
+            let productosHTML = "";
+            pedido.items.forEach(prod => {
+                productosHTML += `<div>• ${prod.cantidad}x ${prod.nombre} ($${(prod.precio * prod.cantidad).toFixed(2)})</div>`;
+            });
+
+            const estructuraItem = document.createElement('div');
+            estructuraItem.className = "pedido-item";
+            estructuraItem.innerHTML = `
+                <div class="pedido-meta">
+                    <span>Pedido ${pedido.id}</span>
+                    <span class="pedido-estado">${pedido.estado}</span>
+                </div>
+                <div class="pedido-productos-lista">
+                    ${productosHTML}
+                </div>
+                <div class="pedido-total-box">
+                    Total: <span style="color: #c89b2b;">$${pedido.total.toFixed(2)}</span>
+                </div>
+                <p style="font-size:11px; color:#666; margin-top:5px; text-align:right;">Estimado: ${pedido.tiempo}</p>
+            `;
+            panel.appendChild(estructuraItem);
+        });
+    } else {
+        panel.innerHTML = `<p style="font-size:13px; color:#aaa; text-align:center; padding:15px 0;">No tienes pedidos pendientes actualmente.</p>`;
+    }
+}
+
+// ====== LOGICA COMPARTIDA DE LA MICROVENTANA FLOTANTE DEL CARRITO ======
+function actualizarInterfazCarrito() {
+    const carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    const wrapperCarrito = document.getElementById("wrapper-carrito");
+    const microContador = document.getElementById("micro-contador");
+    const miniListaItems = document.getElementById("mini-lista-items");
+    const miniPrecioTotal = document.getElementById("mini-precio-total");
+
+    let totalProductos = 0;
+    let costoTotal = 0;
+
+    miniListaItems.innerHTML = "";
+
+    if (carrito.length === 0) {
+        wrapperCarrito.classList.remove("con-pendientes");
+        miniListaItems.innerHTML = `<div class="carrito-vacio-texto">Tu carrito está vacío</div>`;
+        microContador.textContent = "0";
+        miniPrecioTotal.textContent = "$0";
+        return;
+    }
+
+    wrapperCarrito.classList.add("con-pendientes");
+
+    carrito.forEach((producto, index) => {
+        totalProductos += producto.cantidad;
+        costoTotal += producto.precio * producto.cantidad;
+
+        miniListaItems.innerHTML += `
+            <div class="mini-item">
+                <div class="mini-item-info">
+                    <div class="mini-item-nombre">${producto.nombre}</div>
+                    <div class="mini-item-precio">$${producto.precio * producto.cantidad}</div>
+                </div>
+                <div class="mini-item-controles">
+                    <button class="mini-btn" onclick="cambiarCantidadMini(${index}, -1)">-</button>
+                    <span class="mini-item-cant">${producto.cantidad}</span>
+                    <button class="mini-btn" onclick="cambiarCantidadMini(${index}, 1)">+</button>
+                    <button class="mini-btn mini-btn-eliminar" onclick="eliminarDelMini(${index})">🗑️</button>
+                </div>
+            </div>
+        `;
+    });
+
+    microContador.textContent = totalProductos;
+    miniPrecioTotal.textContent = `$${costoTotal}`;
+}
+
+function cambiarCantidadMini(index, cambio) {
+    let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    carrito[index].cantidad += cambio;
+
+    if (carrito[index].cantidad <= 0) {
+        carrito.splice(index, 1);
+    }
+
+    localStorage.setItem('carritoAngelotes', JSON.stringify(carrito));
+    actualizarInterfazCarrito();
+}
+
+function eliminarDelMini(index) {
+    let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    carrito.splice(index, 1);
+    localStorage.setItem('carritoAngelotes', JSON.stringify(carrito));
+    actualizarInterfazCarrito();
+}
+
+function pagarPedido() {
+    let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    if(carrito.length === 0) {
+        alert("El carrito está vacío.");
+        return;
+    }
+    window.location.href = "CARRITO.html"; 
+}
+
+// Inicialización global al cargar el documento
+document.addEventListener("DOMContentLoaded", () => {
+    inicializarPantalla();
+});
+</script>
+
+</body>
+</html>

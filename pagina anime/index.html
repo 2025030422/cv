@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AnimeWorld</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b111b;
+            color: white;
+        }
+
+        header {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            padding: 0 35px;
+            gap: 35px;
+        }
+
+        .logo {
+            background: #1d3048;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        nav a:hover {
+            color: #7db7ff;
+        }
+
+        .buscar {
+            margin-left: auto;
+            width: 300px;
+            padding: 13px 20px;
+            border-radius: 25px;
+            border: none;
+            background: #1d2a3c;
+            color: white;
+            outline: none;
+        }
+
+        .buscar::placeholder {
+            color: #9ba8b8;
+        }
+
+        .principal {
+            margin: 10px 35px 30px;
+            height: 350px;
+            border-radius: 15px;
+            padding: 70px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(11, 17, 27, 0.95),
+                    rgba(11, 17, 27, 0.25)
+                ),
+                url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcF9zOzNWdf_mB3MWVipMTLE-ILGm8Noj2i0ZKWUZpiOorZdH-GL_guCPqL9mCZmwva1miMiYQB1UyCcYHnxbpYxRpWTHOcWRRT4c7AZYU&s=10");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .principal h1 {
+            font-size: 45px;
+            margin: 15px 0;
+        }
+
+        .principal p {
+            width: 450px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .boton {
+            margin-top: 25px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #111;
+            cursor: pointer;
+        }
+
+        .boton:hover {
+            background: #dceaff;
+        }
+
+        .contenido {
+            padding: 0 35px;
+        }
+
+        .titulo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .titulo h2 {
+            font-size: 30px;
+        }
+
+        .ver {
+            background: #1d3048;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .ver:hover {
+            background: #294665;
+        }
+
+        .animes {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 18px;
+        }
+
+        .card {
+            background: #111b28;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #26384d;
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-info {
+            padding: 15px;
+        }
+
+        .card h3 {
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: #aeb9c7;
+            margin-bottom: 12px;
+        }
+
+        .etiqueta {
+            display: inline-block;
+            background: #26384d;
+            padding: 7px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 1000px) {
+            .animes {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            header {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 20px;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .buscar {
+                width: 100%;
+                margin: 10px 0;
+            }
+
+            .principal {
+                margin: 10px 20px;
+                padding: 35px;
+                height: 350px;
+            }
+
+            .principal h1 {
+                font-size: 32px;
+            }
+
+            .principal p {
+                width: auto;
+            }
+
+            .contenido {
+                padding: 20px;
+            }
+
+            .animes {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .card img {
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .animes {
+                grid-template-columns: 1fr;
+            }
+
+            .titulo h2 {
+                font-size: 24px;
+            }
+
+            .principal {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+
+        <div class="logo">
+            AnimeWorld
+        </div>
+
+        <nav>
+            <a href="#">⌂ Inicio</a>
+            <a href="#">◉ Explorar</a>
+            <a href="#">▦ Géneros</a>
+        </nav>
+
+        <input
+            class="buscar"
+            type="text"
+            placeholder="Buscar..."
+        >
+
+        <span>🔔</span>
+        <span>👤</span>
+
+    </header>
+
+    <section class="principal">
+
+        <p>Serie</p>
+
+        <h1>Attack on Titan</h1>
+
+        <p>
+            En un mundo donde la humanidad vive tras enormes
+            murallas, un joven se une a la lucha contra los
+            titanes para descubrir la verdad.
+        </p>
+
+        <button class="boton">
+            Ver anime
+        </button>
+
+    </section>
+
+    <main class="contenido">
+
+        <div class="titulo">
+
+            <h2>Animes populares</h2>
+
+            <button class="ver">
+                Ver todos →
+            </button>
+
+        </div>
+
+        <div class="animes">
+
+            <div class="card">
+
+                <img src="https://m.media-amazon.com/images/M/MV5BZTNjOWI0ZTAtOGY1OS00ZGU0LWEyOWYtMjhkYjdlYmVjMDk2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg">
+
+                <div class="card-info">
+
+                    <h3>Naruto Shippuden</h3>
+
+                    <p>Serie</p>
+
+                    <span class="etiqueta">Año</span>
+                    <span class="etiqueta">Episodios</span>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <img src="https://tse4.mm.bing.net/th/id/OIP.5bn1ZhDrTnC7qxjZvFgzwAHaFj?r=0&pid=Api&h=220&P=0">
+
+                <div class="card-info">
+
+                    <h3>One Piece</h3>
+
+                    <p>Serie</p>
+
+                    <span class="etiqueta">Año</span>
+                    <span class="etiqueta">Episodios</span>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaVIobWYI2Q54mjjG6zjYXOGVMK-oDZHe6LXL7aqYcIg&s=10">
+
+                <div class="card-info">
+
+                    <h3>Kimetsu no Yaiba</h3>
+
+                    <p>Serie</p>
+
+                    <span class="etiqueta">Año</span>
+                    <span class="etiqueta">Episodios</span>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <img src="https://tse1.mm.bing.net/th/id/OIP.gGpjmIC737rEFgIWmQwudgHaEK?r=0&pid=Api&h=220&P=0">
+
+                <div class="card-info">
+
+                    <h3>Jujutsu Kaisen</h3>
+
+                    <p>Serie</p>
+
+                    <span class="etiqueta">Año</span>
+                    <span class="etiqueta">Episodios</span>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <img src="https://tse1.mm.bing.net/th/id/OIP._YO4NVRvpoC_Z9VHefc-TQHaEK?r=0&pid=Api&h=220&P=0">
+
+                <div class="card-info">
+
+                    <h3>Sword Art Online</h3>
+
+                    <p>Serie</p>
+
+                    <span class="etiqueta">Año</span>
+                    <span class="etiqueta">Episodios</span>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <img src="https://tse2.mm.bing.net/th/id/OIP.87yAm6bm4fUMxnYNqPHcHwHaKX?r=0&pid=Api&h=220&P=0">
+
+                <div class="card-info">
+
+                    <h3>Fullmetal Alchemist</h3>
+
+                    <p>Serie</p>
+
+                    <span class="etiqueta">Año</span>
+                    <span class="etiqueta">Episodios</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

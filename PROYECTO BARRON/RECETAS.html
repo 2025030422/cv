@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Recetario Administrador</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow-x:hidden;
+    padding-top: 110px; /* Espacio exacto para la barra superior doble */
+}
+
+/* ====== BARRA SUPERIOR DOBLE (MODO ADMIN) ====== */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.barra-principal {
+    height: 60px;
+    background: #2f2f2f;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.barra-modo-admin {
+    height: 25px;
+    background: #000000;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #c89b2b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.barra-modo-admin p {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    height:100%;
+    margin-left:-15px;
+}
+
+.logo a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.logo img{
+    height:240px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+    transform:translateY(22px);
+    cursor:pointer;
+}
+
+nav{
+    margin-left:auto;
+    margin-right:40px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:50px;
+}
+
+nav ul li a{
+    position:relative;
+    color:#fff;
+    text-decoration:none;
+    font-size:16px;
+    font-weight:bold;
+    padding-bottom:6px;
+    transition:.3s;
+    text-transform: uppercase;
+}
+
+nav ul li.activo a{
+    color: #c89b2b;
+}
+nav ul li.activo a::after {
+    width: 100%;
+}
+
+nav ul li a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:0;
+    height:3px;
+    background:#c89b2b;
+    transition:.3s;
+}
+
+nav ul li a:hover::after{ width:100%; }
+nav ul li a:hover{ color:#c89b2b; text-shadow:0 0 10px #f4d35e; }
+
+.iconos-derecha{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.iconos-derecha img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+    cursor:pointer;
+    transition:.3s;
+}
+.iconos-derecha img:hover{ transform:scale(1.1); }
+
+/* ====== PORTADA Y FONDO GRIS DEL RECETARIO ====== */
+.seccion-recetario {
+    width: 100%;
+    max-width: 1100px;
+    padding: 20px;
+    z-index: 2;
+    margin-top: 10px;
+}
+
+.contenedor-recetario {
+    background: #d1d1d1;
+    border-radius: 4px;
+    padding: 30px 20px;
+    color: #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+}
+
+.contenedor-recetario h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    color: #000;
+}
+
+.tabla-recetario-wrapper {
+    overflow-x: auto;
+}
+
+.tabla-recetario {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid #000000;
+}
+
+.tabla-recetario th {
+    background: #dfb142;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
+    padding: 15px 10px;
+    border: 2px solid #000000;
+    text-align: center;
+}
+
+.tabla-recetario td {
+    border: 2px solid #000000;
+    padding: 10px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    height: 50px;
+}
+
+.tabla-recetario td.col-producto {
+    background: #232323;
+    color: #fff;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+    width: 160px;
+}
+
+.tabla-recetario input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+    outline: none;
+}
+.tabla-recetario input:focus {
+    background: rgba(223, 177, 66, 0.2);
+}
+
+/* Botón flecha naranja/dorado circular idéntico al gráfico */
+.btn-insumo-flecha {
+    background: #dfb142;
+    border: 2px solid #000;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    transition: transform 0.2s, background-color 0.2s;
+}
+.btn-insumo-flecha:hover {
+    transform: scale(1.15);
+    background: #f4d35e;
+}
+
+/* ====== VENTANA FLOTANTE (MODAL INSUMOS) ====== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-insumos {
+    background: #232323; /* Fondo oscuro fidedigno */
+    border: 2px solid #ffffff; /* Borde fino claro */
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+    position: relative;
+    color: #fff;
+    text-align: center;
+    animation: zoomIn 0.25s ease;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-insumos h3 {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.modal-insumos textarea {
+    width: 100%;
+    height: 120px;
+    background: #151515;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.modal-insumos textarea:disabled {
+    background: #1a1a1a;
+    border: 1px solid transparent;
+    color: #ddd;
+}
+
+.modal-botones {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn-modal-cerrar {
+    background: #dfb142;
+    color: #000;
+    border: none;
+    padding: 8px 25px;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-modal-cerrar:hover { background: #fff; }
+
+/* Botón Editar/Guardar inferior derecho */
+.pie-recetario {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.btn-tabla-control {
+    background: #1c1c1c;
+    color: #fff;
+    border: none;
+    padding: 8px 30px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.btn-tabla-control:hover {
+    background: #dfb142;
+    color: #000;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="barra-principal">
+        <div class="logo"><a href="ADMIN.html"><img src="logo.png" alt="Logo"></a></div>
+        <nav>
+            <ul>
+                <li class="activo"><a href="RECETAS.html">RECETAS</a></li>
+                <li><a href="HISTORIAL.html">HISTORIAL</a></li>
+                <li><a href="PEDIDOS.html">PEDIDOS</a></li>
+            </ul>
+        </nav>
+        <div class="iconos-derecha">
+            <a href="LOGIN.html"><img src="login.png" alt="Perfil Admin"></a>
+        </div>
+    </div>
+    <div class="barra-modo-admin">
+        <p>Modo Administrador</p>
+    </div>
+</header>
+
+<main class="seccion-recetario">
+    <div class="contenedor-recetario">
+        <h1>Recetario</h1>
+        
+        <div class="tabla-recetario-wrapper">
+            <table class="tabla-recetario">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">Nombre</th>
+                        <th style="width: 13%;">Elote (G)</th>
+                        <th style="width: 13%;">Queso (G)</th>
+                        <th style="width: 13%;">Crema (G)</th>
+                        <th style="width: 13%;">Ramen (U)</th>
+                        <th style="width: 15%;">Queso Amarillo (G)</th>
+                        <th style="width: 10%;">Insumos</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla-recetas">
+                    <!-- Dinámico -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pie-recetario">
+            <button class="btn-tabla-control" id="btn-editar-guardar" onclick="alternarEdicionRecetas()">Editar</button>
+        </div>
+    </div>
+</main>
+
+<!-- ====== VENTANA MODAL FLOTANTE (ESTRUCTURA DE TU IMAGEN) ====== -->
+<div class="modal-overlay" id="overlayInsumos">
+    <div class="modal-insumos">
+        <h3 id="modalTitulo">Insumos</h3>
+        <!-- Textarea dinámico para ajustar textos en varias líneas -->
+        <textarea id="modalContenido" disabled></textarea>
+        <div class="modal-botones">
+            <button class="btn-modal-cerrar" onclick="cerrarVentanaInsumos()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+if (localStorage.getItem('esAdmin') !== 'true' || localStorage.getItem('sesionActiva') !== 'true') {
+    alert("❌ Acceso denegado.");
+    window.location.href = "LOGIN.html";
+}
+
+// Inicialización de Recetas
+const recetasPorDefecto = [
+    { nombre: "Vaso Chico", elote: "", queso: "", crema: "", ramen: "", queso_amarillo: "" },
+    { nombre: "Vaso Grande", elote: "", queso: "", crema: "", ramen: "", queso_amarillo: "" },
+    { nombre: "Tostielote", elote: "", queso: "", crema: "", ramen: "", queso_amarillo: "" },
+    { nombre: "Angelita", elote: "", queso: "", crema: "", ramen: "", queso_amarillo: "" },
+    { nombre: "Diablito", elote: "", queso: "", crema: "", ramen: "", queso_amarillo: "" },
+    { nombre: "Angelote", elote: "", queso: "", crema: "", ramen: "", queso_amarillo: "" },
+    { nombre: "Elorame", elote: "", queso: "", crema: "", ramen: "", queso_amarillo: "" }
+];
+
+// Base de datos específica para las ventanas flotantes de cada producto
+const insumosPorDefecto = {
+    "Vaso Chico": "1 VASO - 8 ONZAS\n1 CUCHARA\n2 SERVILLETAS...",
+    "Vaso Grande": "1 VASO - 16 ONZAS\n1 CUCHARA\n2 SERVILLETAS...",
+    "Tostielote": "1 BOLSA DE TOSTITOS\n1 TENEDOR\n2 SERVILLETAS...",
+    "Angelita": "1 CHAROLA CORTA\n1 CUCHARA\n3 SERVILLETAS...",
+    "Diablito": "1 VASO CHILE\n1 POPOTE/CUCHARA\n2 SERVILLETAS...",
+    "Angelote": "1 EMPAQUE GRANDE\n1 TENEDOR EXTRA\n4 SERVILLETAS...",
+    "Elorame": "1 CONTENEDOR TÉRMICO\n1 PALILLO O CUCHARA\n2 SERVILLETAS..."
+};
+
+let modoEdicionActivo = false;
+let productoSeleccionadoActual = "";
+
+// Cargar persistencia inicial
+if (!localStorage.getItem('recetasAngelotes')) {
+    localStorage.setItem('recetasAngelotes', JSON.stringify(recetasPorDefecto));
+}
+if (!localStorage.getItem('insumosDesgloseAngelotes')) {
+    localStorage.setItem('insumosDesgloseAngelotes', JSON.stringify(insumosPorDefecto));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    cargarTablaRecetas();
+});
+
+function cargarTablaRecetas() {
+    const recetas = JSON.parse(localStorage.getItem('recetasAngelotes'));
+    const tbody = document.getElementById('cuerpo-tabla-recetas');
+    tbody.innerHTML = "";
+
+    recetas.forEach((receta, index) => {
+        tbody.innerHTML += `
+            <tr>
+                <td class="col-producto">${receta.nombre}</td>
+                <td>${modoEdicionActivo ? `<input type="text" data-index="${index}" data-campo="elote" value="${receta.elote}">` : receta.elote}</td>
+                <td>${modoEdicionActivo ? `<input type="text" data-index="${index}" data-campo="queso" value="${receta.queso}">` : receta.queso}</td>
+                <td>${modoEdicionActivo ? `<input type="text" data-index="${index}" data-campo="crema" value="${receta.crema}">` : receta.crema}</td>
+                <td>${modoEdicionActivo ? `<input type="text" data-index="${index}" data-campo="ramen" value="${receta.ramen}">` : receta.ramen}</td>
+                <td>${modoEdicionActivo ? `<input type="text" data-index="${index}" data-campo="queso_amarillo" value="${receta.queso_amarillo}">` : receta.queso_amarillo}</td>
+                <td>
+                    <button class="btn-insumo-flecha" onclick="desplegarInsumos('${receta.nombre}')">➔</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+// Gestión del Modal Flotante de Insumos
+function desplegarInsumos(nombreProducto) {
+    productoSeleccionadoActual = nombreProducto;
+    const baseInsumos = JSON.parse(localStorage.getItem('insumosDesgloseAngelotes'));
+    
+    document.getElementById('modalTitulo').textContent = `INSUMOS ${nombreProducto.toUpperCase()}`;
+    const txtArea = document.getElementById('modalContenido');
+    txtArea.value = baseInsumos[nombreProducto] || "Sin insumos registrados.";
+    
+    // Si el modo edición principal de la tabla está prendido, permite editar los insumos de la ventana
+    if(modoEdicionActivo) {
+        txtArea.disabled = false;
+    } else {
+        txtArea.disabled = true;
+    }
+    
+    document.getElementById('overlayInsumos').style.display = 'flex';
+}
+
+function cerrarVentanaInsumos() {
+    if(modoEdicionActivo && productoSeleccionadoActual) {
+        const baseInsumos = JSON.parse(localStorage.getItem('insumosDesgloseAngelotes'));
+        baseInsumos[productoSeleccionadoActual] = document.getElementById('modalContenido').value;
+        localStorage.setItem('insumosDesgloseAngelotes', JSON.stringify(baseInsumos));
+    }
+    document.getElementById('overlayInsumos').style.display = 'none';
+}
+
+function alternarEdicionRecetas() {
+    const btn = document.getElementById('btn-editar-guardar');
+    
+    if (!modoEdicionActivo) {
+        modoEdicionActivo = true;
+        btn.textContent = "Guardar";
+        btn.style.background = "#2e7d32";
+        cargarTablaRecetas();
+    } else {
+        const recetas = JSON.parse(localStorage.getItem('recetasAngelotes'));
+        const inputs = document.querySelectorAll('#cuerpo-tabla-recetas input');
+        
+        inputs.forEach(input => {
+            const idx = input.getAttribute('data-index');
+            const campo = input.getAttribute('data-campo');
+            recetas[idx][campo] = input.value.trim();
+        });
+
+        localStorage.setItem('recetasAngelotes', JSON.stringify(recetas));
+        
+        modoEdicionActivo = false;
+        btn.textContent = "Editar";
+        btn.style.background = "#1c1c1c";
+        cargarTablaRecetas();
+        alert("✔️ Cambios en el recetario guardados con éxito.");
+    }
+}
+</script>
+
+</body>
+</html>

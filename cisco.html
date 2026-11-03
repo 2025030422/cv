@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#11120f">
+<meta name="description" content="Prácticas de Cisco y simulaciones en Packet Tracer de Beltran Alexander.">
+<title>Prácticas de CISCO — Beltran Alexander</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#11120f;--panel:#191a16;--panel2:#20211c;--ink:#f1f0e9;--muted:#a3a398;--line:#383a31;--acid:#d6ff5f;--orange:#ff7959;--blue:#9bbcff;--max:1180px;--mono:'DM Mono',monospace;--display:'Space Grotesk',sans-serif;--body:'Manrope',sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.6;overflow-x:hidden}body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.13;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");mix-blend-mode:soft-light}
+a{color:inherit;text-decoration:none}button{font:inherit}.wrap{width:min(var(--max),calc(100% - 48px));margin:auto}.mono{font:11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}.accent{color:var(--acid)}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(17,18,15,.86);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.09)}
+.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font:700 18px var(--display);letter-spacing:-.06em}.brand span{color:var(--acid)}
+.small-btn{border:1px solid var(--line);background:transparent;color:var(--ink);padding:9px 12px;border-radius:2px;font:10px var(--mono);cursor:pointer;transition:.2s}
+.small-btn:hover{border-color:var(--acid);color:var(--acid)}
+.section{padding:72px 0 92px}
+.section-head{display:flex;justify-content:space-between;align-items:start;gap:30px;margin-bottom:42px}
+.section-kicker{font:11px var(--mono);color:var(--acid);letter-spacing:.1em}
+.section-title{font:600 clamp(34px,5vw,58px)/1 var(--display);letter-spacing:-.07em;margin:10px 0 0}
+.section-note{font-size:12px;color:var(--muted);max-width:280px;margin-top:8px}
+.cisco-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.cisco-card{background:var(--panel);border:1px solid var(--line);padding:24px;display:flex;flex-direction:column;justify-content:space-between;transition:.25s;position:relative}
+.cisco-card:hover{border-color:var(--blue);transform:translateY(-4px)}
+.cisco-meta{font:10px var(--mono);color:var(--blue);text-transform:uppercase;margin-bottom:12px}
+.cisco-card h3{font:600 21px var(--display);letter-spacing:-.04em;margin:0 0 8px}
+.cisco-card p{font-size:13px;color:var(--muted);margin:0 0 20px}
+.cisco-foot{display:flex;justify-content:space-between;align-items:center;padding-top:15px;border-top:1px solid var(--line);font:10px var(--mono);text-transform:uppercase;color:var(--ink)}
+.cta-download{display:inline-flex;align-items:center;gap:8px;background:rgba(155,188,255,.1);color:var(--blue);border:1px solid rgba(155,188,255,.3);padding:8px 14px;border-radius:2px;font:10px var(--mono);text-transform:uppercase;transition:.2s}
+.cta-download:hover{background:var(--blue);color:#11120f}
+.footer{padding:25px 0 40px;display:flex;justify-content:space-between;gap:20px;color:var(--muted);font:10px var(--mono);text-transform:uppercase;border-top:1px solid var(--line)}
+@media(max-width:800px){.cisco-grid{grid-template-columns:1fr}}
+@media(max-width:540px){.wrap{width:min(100% - 30px,var(--max))}.section{padding:50px 0}.section-head{display:block}.section-note{max-width:100%;margin-top:12px}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap nav">
+    <a class="brand" href="index.html">BA<span>.</span></a>
+    <a class="small-btn" href="index.html">← Volver al Portafolio</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <div class="section-kicker">03 / INFRAESTRUCTURA Y REDES</div>
+        <h2 class="section-title">Prácticas de CISCO.</h2>
+      </div>
+      <p class="section-note">Simulaciones, topologías y configuraciones de red listas para descargar y probar en Cisco Packet Tracer.</p>
+    </div>
+
+    <div class="cisco-grid">
+      
+      <!-- 1: ACL -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 01</div>
+          <h3>ACL</h3>
+          <p>Configuración de Listas de Control de Acceso para filtrado de tráfico.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/ACL.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 2: ACL-DHCP -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 02</div>
+          <h3>ACL-DHCP</h3>
+          <p>Implementación combinada de seguridad de acceso y asignación dinámica de IPs.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/ACL-DHCP.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 3: ARAÑA -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 03</div>
+          <h3>ARAÑA</h3>
+          <p>Topología avanzada de red con diseño estructurado y escalable.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/ARANA.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 4: Channel -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 04</div>
+          <h3>Channel</h3>
+          <p>Configuración de enlaces troncales y agregación de puertos.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/channel.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 5: Ether Channel -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 05</div>
+          <h3>Ether Channel</h3>
+          <p>Agrupación de enlaces Ethernet para mayor ancho de banda y redundancia.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/ether_channel.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 6: Ether Channel 1 -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 06</div>
+          <h3>Ether Channel 1</h3>
+          <p>Variante avanzada de configuración y pruebas de agregación de puertos.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/ether_channel1.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 7: Flotantes -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 07</div>
+          <h3>Rutas Flotantes</h3>
+          <p>Implementación de rutas estáticas flotantes para tolerancia a fallos.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/flotantestas.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 8: HSRP con Multicapa -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 08</div>
+          <h3>HSRP con Multicapa</h3>
+          <p>Alta disponibilidad de gateway utilizando switches de capa 3.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/HSRP_con_MULTICAPA.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 9: HSRP -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 09</div>
+          <h3>HSRP</h3>
+          <p>Protocolo de respaldo de router virtual para redundancia de salto predeterminado.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/HSRP.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 10: Integradora de Protocolos -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 10</div>
+          <h3>Integradora de Protocolos</h3>
+          <p>Práctica integral de enrutamiento dinámico, servicios y seguridad.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/INTEGRADORA_DE_PROTOCOLOS.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 11: Integradora -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 11</div>
+          <h3>Integradora General</h3>
+          <p>Proyecto global enfocado en la conectividad de redes corporativas.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/integradora.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 12: Multicapa -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 12</div>
+          <h3>Multicapa</h3>
+          <p>Enrutamiento Inter-VLAN mediante el uso de switches multicapa.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/milticapa.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 13: MMM -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 13</div>
+          <h3>MMM</h3>
+          <p>Simulación topológica enfocada en pruebas de conectividad y ruteo.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/mmm.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+      <!-- 14: Voice -->
+      <article class="cisco-card">
+        <div>
+          <div class="cisco-meta">LAB — 14</div>
+          <h3>Voice (Telefonía IP)</h3>
+          <p>Configuración de telefonía IP, VLAN de voz y servicios de red dedicados.</p>
+        </div>
+        <div class="cisco-foot">
+          <span>Packet Tracer (.pkt)</span>
+          <a href="proyectos_cisco/voice.pkt" download class="cta-download">Descargar <span>↓</span></a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+</main>
+
+<footer class="wrap footer">
+  <span>© 2026 · BELTRAN ALEXANDER</span>
+  <span>Mazatlán, MX</span>
+</footer>
+
+</body>
+</html>

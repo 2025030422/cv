@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MENU</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    overflow: hidden; /* Evita el scroll general de la pantalla */
+}
+
+/* ====== BARRA SUPERIOR ====== */
+header{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:#2f2f2f;
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    z-index:1000;
+}
+
+/* ====== LOGO ====== */
+.logo{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    height:100%;
+    margin-left:-15px;
+}
+
+.logo a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.logo img{
+    height:240px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+    transform:translateY(22px);
+    cursor:pointer;
+}
+
+/* ====== MENÚ ====== */
+nav{
+    margin-left:auto;
+    margin-right:40px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:60px;
+}
+
+nav ul li a{
+    position:relative;
+    color:#fff;
+    text-decoration:none;
+    font-size:18px;
+    font-weight:bold;
+    padding-bottom:6px;
+    transition:.3s;
+}
+
+/* Barra amarilla */
+nav ul li a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:0;
+    height:3px;
+    background:#c89b2b;
+    transition:.3s;
+}
+
+/* Efecto igual al MENU */
+nav ul li a:hover::after,
+nav ul li a.active::after{
+    width:100%;
+}
+
+nav ul li a:hover,
+nav ul li a.active{
+    color:#c89b2b;
+    text-shadow:0 0 10px #f4d35e;
+}
+
+/* ====== ICONOS DERECHOS (LOGIN Y CARRITO) ====== */
+.iconos-derecha{
+    display:flex;
+    align-items:center;
+    gap:15px; /* Separación entre el login y el carrito */
+}
+
+.iconos-derecha a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.iconos-derecha img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.iconos-derecha img:hover{
+    transform:scale(1.1);
+}
+
+/* ====== CONTENEDOR Y EFECTOS DEL CARRITO ====== */
+.contenedor-carrito {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Animación de pulso dorado cuando hay productos pendientes */
+@keyframes pulsoDorado {
+    0% { filter: drop-shadow(0 0 2px #c89b2b); }
+    50% { filter: drop-shadow(0 0 15px #f4d35e); }
+    100% { filter: drop-shadow(0 0 2px #c89b2b); }
+}
+
+.contenedor-carrito.con-pendientes img {
+    animation: pulsoDorado 2s infinite ease-in-out;
+}
+
+/* Micro número / Contador */
+.contador-carrito {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #c89b2b;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #2f2f2f;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.contenedor-carrito.con-pendientes .contador-carrito {
+    opacity: 1;
+}
+
+/* MICRO VENTANA FLOTANTE del carrito */
+.micro-ventana-carrito {
+    position: absolute;
+    top: 55px;
+    right: 0;
+    width: 320px;
+    background: #1f1f1f;
+    border: 1px solid #c89b2b;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+    z-index: 2000;
+}
+
+/* Mostrar la micro ventana al pasar el cursor sobre el contenedor del carrito */
+.contenedor-carrito:hover .micro-ventana-carrito {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.micro-ventana-carrito h3 {
+    font-size: 16px;
+    color: #c89b2b;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px;
+    text-align: center;
+}
+
+.lista-mini-productos {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Scroll estilizado para la microventana */
+.lista-mini-productos::-webkit-scrollbar { width: 4px; }
+.lista-mini-productos::-webkit-scrollbar-thumb { background: #c89b2b; border-radius: 4px; }
+
+/* Items dentro de la micro ventana */
+.mini-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #2a2a2a;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.mini-item-info {
+    flex: 1;
+}
+
+.mini-item-nombre {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.mini-item-precio {
+    font-size: 12px;
+    color: #c89b2b;
+}
+
+/* Controles de cantidad (+ / - / bote de basura) */
+.mini-item-controles {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mini-btn {
+    background: #3a3a3a;
+    border: none;
+    color: white;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.mini-btn:hover { background: #c89b2b; }
+
+.mini-btn-eliminar {
+    background: #8b2525;
+    font-size: 10px;
+}
+.mini-btn-eliminar:hover { background: #b83232; }
+
+.mini-item-cant {
+    font-size: 13px;
+    font-weight: bold;
+    min-width: 14px;
+    text-align: center;
+}
+
+.mini-total {
+    border-top: 1px solid #333;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.btn-pagar-mini {
+    background: #c89b2b;
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s, transform 0.1s;
+    font-size: 14px;
+}
+
+.btn-pagar-mini:hover {
+    background: #f4d35e;
+    transform: scale(1.02);
+}
+
+.carrito-vacio-texto {
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+    padding: 15px 0;
+}
+
+
+/* ===== ESTRUCTURA PANTALLA DIVIDIDA ===== */
+.pantalla-dividida {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    padding-top: 60px; /* Espacio para que no lo tape el header */
+}
+
+/* Panel Izquierdo: Contenedor con la imagen de fondo */
+.panel-izquierdo {
+    flex: 1;
+    background-image: url("fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 20px;
+    border-radius: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: background-image 0.25s ease-in-out, background-color 0.25s ease-in-out;
+}
+
+/* Oculta la imagen de fondo de forma limpia al hacer hover en cualquier producto */
+.pantalla-dividida:has(.producto-contenedor:hover) .panel-izquierdo {
+    background-image: none;
+    background-color: #0b0b0b; 
+}
+
+/* Imagen del producto superpuesta en el centro */
+.foto-producto-preview {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transform: scale(0.95);
+    pointer-events: none; /* Evita interferencias con el mouse */
+}
+
+/* Cuando se activa la previsualización */
+.foto-producto-preview.activa {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Panel Derecho: Lista de Productos con scroll */
+.panel-derecho {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px;
+}
+
+/* Barra de scroll oculta o estilizada */
+.panel-derecho::-webkit-scrollbar {
+    width: 6px;
+}
+.panel-derecho::-webkit-scrollbar-thumb {
+    background: #c89b2b;
+    border-radius: 10px;
+}
+
+h1{
+    text-align:center;
+    color:#fff;
+    font-size:36px;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+    font-weight: 300;
+}
+
+.linea-divisoria {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c89b2b, transparent);
+    margin-bottom: 40px;
+}
+
+/* PRODUCTOS */
+.producto-contenedor {
+    border-bottom: 1px solid #222;
+    padding: 20px 0; 
+    transition: background-color 0.2s ease;
+}
+
+.producto-contenedor:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.producto-fila {
+    display:flex;
+    align-items:center;
+    gap:25px;
+}
+
+/* ICONO TRES PUNTOS */
+.detalle-btn{
+    width: 60px;
+    height: 60px;
+    cursor:pointer;
+    object-fit: contain;
+    transition: .2s;
+    opacity: 0.7;
+}
+
+.detalle-btn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.info{
+    flex:1;
+}
+
+.nombre{
+    font-size:20px;
+    font-weight:bold;
+    letter-spacing: 1px;
+}
+
+.precio{
+    font-size:20px;
+    font-weight: bold;
+    color:#fff;
+    margin-right: 30px;
+}
+
+/* BOTÓN MÁS (+) */
+.agregar-btn {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    object-fit: contain;
+    transition: .2s;
+    opacity: 0.7;
+}
+
+.agregar-btn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* DESCRIPCION OCULTA */
+.descripcion{
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transition:.4s ease-in-out;
+    color:#b5b5b5;
+    font-size:14px;
+    font-style: italic;
+    line-height:1.6;
+    padding-left: 85px;
+}
+
+.descripcion.mostrar{
+    max-height:80px;
+    opacity:1;
+    margin-top:12px;
+    margin-bottom: 5px;
+}
+
+/* Adaptación móvil */
+@media (max-width: 900px) {
+    .pantalla-dividida {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+    body {
+        overflow: auto;
+    }
+    .panel-izquierdo {
+        height: 300px;
+        flex: none;
+    }
+    .panel-derecho {
+        flex: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <a href="PAGINA PRINCIPAL.html">
+            <img src="logo.png" alt="Logo">
+        </a>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="MENU.html" class="active">MENÚ</a></li>
+            <li><a href="CONTACTO.html">CONTACTO</a></li>
+            <li><a href="UBICACION.html">UBICACIÓN</a></li>
+        </ul>
+    </nav>
+
+    <div class="iconos-derecha">
+        <a href="LOGIN.html">
+            <img src="login.png" alt="Login">
+        </a>
+        
+        <div class="contenedor-carrito" id="wrapper-carrito">
+            <a href="CARRITO.html">
+                <img src="carrito.png" alt="Carrito">
+            </a>
+            <div class="contador-carrito" id="micro-contador">0</div>
+            
+            <!-- Micro Ventana Flotante -->
+            <div class="micro-ventana-carrito">
+                <h3>Tu Pedido</h3>
+                <div class="lista-mini-productos" id="mini-lista-items">
+                    <!-- Se rellena automáticamente con JS -->
+                </div>
+                <div class="mini-total">
+                    <span>Total:</span>
+                    <span id="mini-precio-total">$0</span>
+                </div>
+                <button class="btn-pagar-mini" onclick="pagarPedido()">Proceder al Pago</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="pantalla-dividida">
+   
+    <div class="panel-izquierdo" id="contenedor-fondo">
+        <img src="" id="foto-producto" class="foto-producto-preview" alt="Producto">
+    </div>
+
+    <main class="panel-derecho">
+        <h1>MENÚ</h1>
+        <div class="linea-divisoria"></div>
+
+        <div class="producto-contenedor" data-imagen="elote_chico.jpg">
+            <div class="producto-fila">
+                <img src="tres_puntos.png" class="detalle-btn" onclick="mostrar(this)" alt="Detalles">
+                <div class="info">
+                    <div class="nombre">ELOTE CHICO</div>
+                </div>
+                <div class="precio">$30</div>
+                <img src="mas.png" class="agregar-btn" onclick="agregarAlCarrito('ELOTE CHICO', 30, 'logo.png')" alt="Agregar">
+            </div>
+            <div class="descripcion">
+                Incluye queso extra, chile y limón.
+            </div>
+        </div>
+
+        <div class="producto-contenedor" data-imagen="elote_grande.jpg">
+            <div class="producto-fila">
+                <img src="tres_puntos.png" class="detalle-btn" onclick="mostrar(this)" alt="Detalles">
+                <div class="info">
+                    <div class="nombre">ELOTE GRANDE</div>
+                </div>
+                <div class="precio">$40</div>
+                <img src="mas.png" class="agregar-btn" onclick="agregarAlCarrito('ELOTE GRANDE', 40, 'logo.png')" alt="Agregar">
+            </div>
+            <div class="descripcion">
+                Incluye queso extra, chile y limón.
+            </div>
+        </div>
+
+        <div class="producto-contenedor" data-imagen="tostielote.jpg">
+            <div class="producto-fila">
+                <img src="tres_puntos.png" class="detalle-btn" onclick="mostrar(this)" alt="Detalles">
+                <div class="info">
+                    <div class="nombre">TOSTIELOTE</div>
+                </div>
+                <div class="precio">$60</div>
+                <img src="mas.png" class="agregar-btn" onclick="agregarAlCarrito('TOSTIELOTE', 60, 'logo.png')" alt="Agregar">
+            </div>
+            <div class="descripcion">
+                Base de Tostitos crujientes acompañados de elote desgranado.<br>
+                Servido con queso extra, chile y limón.
+            </div>
+        </div>
+
+        <div class="producto-contenedor" data-imagen="medio_litro.jpg">
+            <div class="producto-fila">
+                <img src="tres_puntos.png" class="detalle-btn" onclick="mostrar(this)" alt="Detalles">
+                <div class="info">
+                    <div class="nombre">MEDIO LITRO</div>
+                </div>
+                <div class="precio">$70</div>
+                <img src="mas.png" class="agregar-btn" onclick="agregarAlCarrito('MEDIO LITRO', 70, 'logo.png')" alt="Agregar">
+            </div>
+            <div class="descripcion">
+                Elote desgranado preparado con crema, queso rallado y queso amarillo derretido.
+            </div>
+        </div>
+
+        <div class="producto-contenedor" data-imagen="angelita.jpg">
+            <div class="producto-fila">
+                <img src="tres_puntos.png" class="detalle-btn" onclick="mostrar(this)" alt="Detalles">
+                <div class="info">
+                    <div class="nombre">ANGELITA</div>
+                </div>
+                <div class="precio">$90</div>
+                <img src="mas.png" class="agregar-btn" onclick="agregarAlCarrito('ANGELITA', 90, 'logo.png')" alt="Agregar">
+            </div>
+            <div class="descripcion">
+                Charola chica con elote, crema, queso rallado y queso amarillo derretido.<br>
+                Incluye una porción de Sabritas a elegir.
+            </div>
+        </div>
+
+        <div class="producto-contenedor" data-imagen="diablito.jpg">
+            <div class="producto-fila">
+                <img src="tres_puntos.png" class="detalle-btn" onclick="mostrar(this)" alt="Detalles">
+                <div class="info">
+                    <div class="nombre">DIABLITO</div>
+                </div>
+                <div class="precio">$95</div>
+                <img src="mas.png" class="agregar-btn" onclick="agregarAlCarrito('DIABLITO', 95, 'logo.png')" alt="Agregar">
+            </div>
+            <div class="descripcion">
+                Vaso de elote preparado con Cheetos Flamin' Hot, queso, crema y queso amarillo.<br>
+                Servido con un toque de chile y limón.
+            </div>
+        </div>
+
+        <div class="producto-contenedor" data-imagen="angelote.jpg">
+            <div class="producto-fila">
+                <img src="tres_puntos.png" class="detalle-btn" onclick="mostrar(this)" alt="Detalles">
+                <div class="info">
+                    <div class="nombre">ANGELOTE</div>
+                </div>
+                <div class="precio">$150</div>
+                <img src="mas.png" class="agregar-btn" onclick="agregarAlCarrito('ANGELOTE', 150, 'logo.png')" alt="Agregar">
+            </div>
+            <div class="descripcion">
+                Charola grande con elote, crema, queso rallado y queso amarillo derretido.<br>
+                Incluye dos porciones de Sabritas a elegir.
+            </div>
+        </div>
+
+        <div class="producto-contenedor" data-imagen="remenelote.jpg">
+            <div class="producto-fila">
+                <img src="tres_puntos.png" class="detalle-btn" onclick="mostrar(this)" alt="Detalles">
+                <div class="info">
+                    <div class="nombre">RAMENLOTE</div>
+                </div>
+                <div class="precio">$85</div>
+                <img src="mas.png" class="agregar-btn" onclick="agregarAlCarrito('REMENELOTE', 85, 'logo.png')" alt="Agregar">
+            </div>
+            <div class="descripcion">
+                Fusión de Ramen tradicional con elote desgranado, crema, queso, chile en polvo y limón.
+            </div>
+        </div>
+    </main>
+
+</div>
+
+<script>
+function mostrar(boton){
+    let contenedor = boton.closest(".producto-contenedor");
+    let descripcion = contenedor.querySelector(".descripcion");
+    descripcion.classList.toggle("mostrar");
+}
+
+// ====== LÓGICA DEL CARRITO FLOTANTE ======
+
+function actualizarInterfazCarrito() {
+    const carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    const wrapperCarrito = document.getElementById("wrapper-carrito");
+    const microContador = document.getElementById("micro-contador");
+    const miniListaItems = document.getElementById("mini-lista-items");
+    const miniPrecioTotal = document.getElementById("mini-precio-total");
+
+    let totalProductos = 0;
+    let costoTotal = 0;
+
+    miniListaItems.innerHTML = "";
+
+    if (carrito.length === 0) {
+        wrapperCarrito.classList.remove("con-pendientes");
+        miniListaItems.innerHTML = `<div class="carrito-vacio-texto">Tu carrito está vacío</div>`;
+        microContador.textContent = "0";
+        miniPrecioTotal.textContent = "$0";
+        return;
+    }
+
+    wrapperCarrito.classList.add("con-pendientes");
+
+    carrito.forEach((producto, index) => {
+        totalProductos += producto.cantidad;
+        costoTotal += producto.precio * producto.cantidad;
+
+        miniListaItems.innerHTML += `
+            <div class="mini-item">
+                <div class="mini-item-info">
+                    <div class="mini-item-nombre">${producto.nombre}</div>
+                    <div class="mini-item-precio">$${producto.precio * producto.cantidad}</div>
+                </div>
+                <div class="mini-item-controles">
+                    <button class="mini-btn" onclick="cambiarCantidadMini(${index}, -1)">-</button>
+                    <span class="mini-item-cant">${producto.cantidad}</span>
+                    <button class="mini-btn" onclick="cambiarCantidadMini(${index}, 1)">+</button>
+                    <button class="mini-btn mini-btn-eliminar" onclick="eliminarDelMini(${index})">🗑️</button>
+                </div>
+            </div>
+        `;
+    });
+
+    microContador.textContent = totalProductos;
+    miniPrecioTotal.textContent = `$${costoTotal}`;
+}
+
+function agregarAlCarrito(nombre, precio, imagen) {
+    let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    let productoExistente = carrito.find(item => item.nombre === nombre);
+
+    if (productoExistente) {
+        productoExistente.cantidad += 1;
+    } else {
+        carrito.push({
+            nombre: nombre,
+            precio: parseFloat(precio),
+            imagen: imagen,
+            cantidad: 1
+        });
+    }
+
+    localStorage.setItem('carritoAngelotes', JSON.stringify(carrito));
+    actualizarInterfazCarrito();
+}
+
+function cambiarCantidadMini(index, cambio) {
+    let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    carrito[index].cantidad += cambio;
+
+    if (carrito[index].cantidad <= 0) {
+        carrito.splice(index, 1);
+    }
+
+    localStorage.setItem('carritoAngelotes', JSON.stringify(carrito));
+    actualizarInterfazCarrito();
+}
+
+function eliminarDelMini(index) {
+    let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    carrito.splice(index, 1);
+    localStorage.setItem('carritoAngelotes', JSON.stringify(carrito));
+    actualizarInterfazCarrito();
+}
+
+function pagarPedido() {
+    let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    if(carrito.length === 0) {
+        alert("El carrito está vacío.");
+        return;
+    }
+    alert("Redirigiendo a la pasarela de pago...");
+    window.location.href = "CARRITO.html"; 
+}
+
+
+// ====== INTERCAMBIO DE IMÁGENES PREVIEW ======
+document.addEventListener("DOMContentLoaded", () => {
+    actualizarInterfazCarrito();
+
+    const fotoProducto = document.getElementById("foto-producto");
+    const productos = document.querySelectorAll(".producto-contenedor");
+
+    productos.forEach(producto => {
+        producto.addEventListener("mouseenter", () => {
+            const rutaImagen = producto.getAttribute("data-imagen");
+            if (rutaImagen) {
+                fotoProducto.src = rutaImagen;
+                fotoProducto.classList.add("activa");
+            }
+        });
+
+        producto.addEventListener("mouseleave", () => {
+            fotoProducto.classList.remove("activa");
+            // Espera el fin de la animación antes de borrar el src
+            setTimeout(() => {
+                if(!fotoProducto.classList.contains("activa")) {
+                    fotoProducto.src = "";
+                }
+            }, 300);
+        });
+    });
+});
+</script>
+
+</body>
+</html>

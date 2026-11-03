@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Sucursales</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow-x:hidden;
+    padding-top: 150px; 
+}
+
+/* ====== BARRA SUPERIOR TRIPLE (MODO ADMIN + SUB-NAV) ====== */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.barra-principal {
+    height: 60px;
+    background: #2f2f2f;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.barra-modo-admin {
+    height: 25px;
+    background: #000000;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #c89b2b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.barra-modo-admin p {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* ====== BARRA DE SUB-NAVEGACIÓN INTERNA ====== */
+.barra-subnavegacion {
+    height: 45px;
+    background: #232323;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    border-bottom: 1px solid #111;
+    padding: 0 10%;
+}
+
+.barra-subnavegacion a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: 0.2s;
+}
+
+.barra-subnavegacion a:hover {
+    color: #fff;
+}
+
+.barra-subnavegacion a.sub-activo {
+    color: #fff;
+}
+.barra-subnavegacion a.sub-activo::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #dfb142;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    height:100%;
+    margin-left:-15px;
+}
+
+.logo a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.logo img{
+    height:240px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+    transform:translateY(22px);
+    cursor:pointer;
+}
+
+nav{
+    margin-left:auto;
+    margin-right:40px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:50px;
+}
+
+nav ul li a{
+    position:relative;
+    color:#fff;
+    text-decoration:none;
+    font-size:16px;
+    font-weight:bold;
+    padding-bottom:6px;
+    transition:.3s;
+    text-transform: uppercase;
+}
+
+nav ul li a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:0;
+    height:3px;
+    background:#c89b2b;
+    transition:.3s;
+}
+
+nav ul li a:hover::after{ width:100%; }
+nav ul li a:hover, nav ul li.activo a{ color:#c89b2b; text-shadow:0 0 10px #f4d35e; }
+nav ul li.activo a::after{ width:100%; }
+
+.iconos-derecha{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.iconos-derecha img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+    cursor:pointer;
+    transition:.3s;
+}
+.iconos-derecha img:hover{ transform:scale(1.1); }
+
+/* ====== INTERFAZ DEL PANEL DE SUCURSALES ====== */
+.seccion-sucursales {
+    width: 100%;
+    max-width: 1380px;
+    padding: 20px;
+    z-index: 2;
+    margin-top: 10px;
+}
+
+.contenedor-sucursales {
+    background: #d1d1d1;
+    border-radius: 12px;
+    padding: 30px 25px;
+    color: #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.contenedor-sucursales h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: #000;
+}
+
+.tabla-layout-contenedor {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tabla-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    flex-grow: 1;
+}
+
+.tabla-sucursales {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 4px solid #000000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tabla-sucursales th {
+    background: #dfb142;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 15px 5px;
+    border: 2px solid #000000;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.tabla-sucursales td {
+    border: 2px solid #000000;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    height: 75px;
+    background: #fff;
+}
+
+.tabla-sucursales td.col-nombre {
+    background: #1c1c1c;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    width: 160px;
+}
+
+.tabla-sucursales input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+    outline: none;
+}
+.tabla-sucursales input:focus {
+    background: rgba(223, 177, 66, 0.2);
+}
+
+/* Columna lateral dinámica de acciones */
+.columna-acciones {
+    display: flex;
+    flex-direction: column;
+}
+
+.bloque-acciones-fila {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 75px; 
+}
+
+.btn-accion-flecha {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+.btn-accion-flecha:hover { transform: scale(1.15); }
+.btn-accion-flecha svg { width: 30px; height: 30px; fill: #dfb142; }
+
+/* Botones de acción individuales */
+.btn-accion-historial, .btn-accion-eliminar {
+    background: #1c1c1c;
+    border: 2px solid #000;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: .2s;
+}
+.btn-accion-historial:hover { background: #dfb142; }
+.btn-accion-historial:hover svg { fill: #000; }
+.btn-accion-historial svg { width: 20px; height: 20px; fill: #fff; transition: .2s;}
+
+.btn-accion-eliminar:hover { background: #d32f2f; border-color: #7f0000; }
+.btn-accion-eliminar svg { width: 20px; height: 20px; fill: #f44336; transition: .2s;}
+.btn-accion-eliminar:hover svg { fill: #fff; }
+
+.pie-sucursales {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+}
+
+.btn-editar-sucursales, .btn-agregar-sucursal {
+    background: #1c1c1c;
+    color: #fff;
+    border: none;
+    padding: 12px 35px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.btn-editar-sucursales:hover, .btn-agregar-sucursal:hover {
+    background: #dfb142;
+    color: #000;
+}
+
+/* ====== VENTANA MODAL (HISTORIAL INDEPENDIENTE) ====== */
+.modal-historial {
+    display: none; 
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.modal-contenido {
+    background: #d1d1d1;
+    color: #000;
+    width: 100%;
+    max-width: 1200px;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.cerrar-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #000;
+    transition: .2s;
+}
+.cerrar-modal:hover { color: #dfb142; }
+
+.controles-fecha {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+.controles-fecha label { font-weight: bold; text-transform: uppercase; font-size: 14px;}
+.controles-fecha input[type="week"] {
+    padding: 6px 12px; font-weight: bold; border: 3px solid #000; border-radius: 6px; outline: none;
+}
+.tabla-historial {
+    width: 100%; border-collapse: separate; border-spacing: 0; border: 4px solid #000000; border-radius: 12px; overflow: hidden;
+}
+.tabla-historial th {
+    background: #dfb142; color: #000; font-weight: bold; text-transform: uppercase; font-size: 12px; padding: 12px 5px; border: 2px solid #000000; text-align: center;
+}
+.tabla-historial td {
+    border: 2px solid #000000; padding: 8px; text-align: center; font-size: 13px; font-weight: bold; height: 48px; background: #fff;
+}
+.tabla-historial td.col-dia { background: #1c1c1c; color: #fff; text-transform: uppercase; font-size: 11px; }
+.tabla-historial input { width: 100%; height: 100%; background: transparent; border: none; text-align: center; font-weight: bold; color: #000; outline: none; }
+.fila-inferior-tabla { display: flex; margin-top: -4px; }
+.bloque-mes { background: #dfb142; color: #000; font-weight: bold; text-transform: uppercase; padding: 10px 25px; border: 4px solid #000000; border-top: none; border-radius: 0 0 10px 10px; font-size: 14px; }
+.btn-modal-guardar { background: #1c1c1c; color:#fff; border:none; padding:10px 30px; font-weight:bold; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:.2s;}
+.btn-modal-guardar:hover { background:#2e7d32; }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="barra-principal">
+        <div class="logo"><a href="ADMIN.html"><img src="logo.png" alt="Logo"></a></div>
+        <nav>
+            <ul>
+                <li><a href="RECETAS.html">RECETAS</a></li>
+                <!-- Corregido: HISTORIAL apunta ahora al archivo HVENTAS.html -->
+                <li><a href="HVENTAS.html">HISTORIAL</a></li>
+                <li><a href="PEDIDOS.html">PEDIDOS</a></li>
+                <li class="activo"><a href="SUCURSALES.html">SUCURSALES</a></li>
+            </ul>
+        </nav>
+        <div class="iconos-derecha">
+            <a href="LOGIN.html"><img src="login.png" alt="Perfil Admin"></a>
+        </div>
+    </div>
+    <div class="barra-modo-admin">
+        <p>Modo Administrador</p>
+    </div>
+    <div class="barra-subnavegacion">
+        <a href="ALMACEN.html">ALMACEN</a>
+        <!-- Corregido: HISTORIAL DE VENTAS apunta ahora al archivo HVENTAS.html -->
+        <a href="HVENTAS.html">HISTORIAL DE VENTAS</a>
+        <a href="SUCURSALES.html" class="sub-activo">SUCURSALES</a>
+    </div>
+</header>
+
+<main class="seccion-sucursales">
+    <div class="contenedor-sucursales">
+        <h1>Sucursales</h1>
+        
+        <div class="tabla-layout-contenedor">
+            <div class="tabla-wrapper">
+                <table class="tabla-sucursales">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Nombre</th>
+                            <th style="width: 13%;">Ubicación</th>
+                            <th style="width: 12%;">Encargado</th>
+                            <th style="width: 12%;">Contacto</th>
+                            <th style="width: 12%;">Ventas</th>
+                            <th style="width: 12%;">Ganancias</th>
+                            <th style="width: 12%;">Cantidad de Ventas</th>
+                            <th style="width: 12%;">Rendimiento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-tabla-sucursales">
+                        <!-- Dinámico -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Columna de acciones dinámica -->
+            <div class="columna-acciones" id="col-acciones-dinamica">
+                <!-- Dinámico -->
+            </div>
+        </div>
+
+        <div class="pie-sucursales">
+            <button class="btn-agregar-sucursal" onclick="agregarNuevaSucursal()">+ Añadir Sucursal</button>
+            <button class="btn-editar-sucursales" id="btn-control-sucursales" onclick="alternarEdicionSucursales()">Editar</button>
+        </div>
+    </div>
+</main>
+
+<!-- ====== VENTANA MODAL DEL HISTORIAL ====== */ -->
+<div class="modal-historial" id="modalHistorialSucursal">
+    <div class="modal-contenido">
+        <span class="cerrar-modal" onclick="cerrarModalHistorial()">&times;</span>
+        <h2 id="titulo-modal-historial" style="text-align:center; text-transform:uppercase; margin-bottom:15px; letter-spacing:1px;">Historial de Ventas</h2>
+        
+        <div class="controles-fecha">
+            <label for="modal-selector-semana">Ver Semana:</label>
+            <input type="week" id="modal-selector-semana" onchange="cambiarSemanaModal(this.value)">
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table class="tabla-historial">
+                <thead>
+                    <tr>
+                        <th style="width: 14%;">Día / Fecha</th>
+                        <th style="width: 10%;">Total de Ventas</th>
+                        <th style="width: 11%;">Cantidad de Productos Vendidos</th>
+                        <th style="width: 10%;">Gastos</th>
+                        <th style="width: 10%;">Ganancias</th>
+                        <th style="width: 11%;">Ingresos Netos</th>
+                        <th style="width: 11%;">Inventario Utilizado</th>
+                        <th style="width: 11%;">Promedio de Ventas</th>
+                        <th style="width: 11%;">Promedio de Ventas</th>
+                    </tr>
+                </thead>
+                <tbody id="modal-cuerpo-tabla">
+                    <!-- Dinámico por sucursal -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="fila-inferior-tabla" style="justify-content: space-between; align-items: flex-start; margin-top:0px;">
+            <div class="bloque-mes" id="modal-etiqueta-mes">---</div>
+            <div style="margin-top: 15px;">
+                <button class="btn-modal-guardar" id="btn-modal-guardar" onclick="guardarHistorialModal()">Guardar Historial</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+if (localStorage.getItem('esAdmin') !== 'true' || localStorage.getItem('sesionActiva') !== 'true') {
+    alert("❌ Acceso denegado.");
+    window.location.href = "LOGIN.html";
+}
+
+let modoEdicion = false;
+let sucursalSeleccionadaIdx = null;
+let semanaActualModalKey = "";
+const nombresDias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
+const predeterminadas = ["Angelotes", "Angelotes Centro", "Angelotes Zona Dorada"];
+
+document.addEventListener("DOMContentLoaded", () => {
+    cargarTablaSucursales();
+});
+
+function cargarTablaSucursales() {
+    let baseDatosSucursales = JSON.parse(localStorage.getItem('datosSucursalesAngelotes'));
+    
+    if (!baseDatosSucursales) {
+        baseDatosSucursales = predeterminadas.map(nombre => ({
+            nombre: nombre, ubicacion: "", encargado: "", contacto: "", ventas: "", ganancias: "", cant_ventas: "", rendimiento: ""
+        }));
+        localStorage.setItem('datosSucursalesAngelotes', JSON.stringify(baseDatosSucursales));
+    }
+
+    const tbody = document.getElementById('cuerpo-tabla-sucursales');
+    const colAcciones = document.getElementById('col-acciones-dinamica');
+    
+    tbody.innerHTML = "";
+    colAcciones.innerHTML = "";
+
+    baseDatosSucursales.forEach((item, index) => {
+        tbody.innerHTML += `
+            <tr>
+                <td class="col-nombre">${item.nombre}</td>
+                <td>${modoEdicion ? `<input type="text" data-index="${index}" data-campo="ubicacion" value="${item.ubicacion}">` : item.ubicacion}</td>
+                <td>${modoEdicion ? `<input type="text" data-index="${index}" data-campo="encargado" value="${item.encargado}">` : item.encargado}</td>
+                <td>${modoEdicion ? `<input type="text" data-index="${index}" data-campo="contacto" value="${item.contacto}">` : item.contacto}</td>
+                <td>${modoEdicion ? `<input type="text" data-index="${index}" data-campo="ventas" value="${item.ventas}">` : item.ventas}</td>
+                <td>${modoEdicion ? `<input type="text" data-index="${index}" data-campo="ganancias" value="${item.ganancias}">` : item.ganancias}</td>
+                <td>${modoEdicion ? `<input type="text" data-index="${index}" data-campo="cant_ventas" value="${item.cant_ventas}">` : item.cant_ventas}</td>
+                <td>${modoEdicion ? `<input type="text" data-index="${index}" data-campo="rendimiento" value="${item.rendimiento}">` : item.rendimiento}</td>
+            </tr>
+        `;
+
+        colAcciones.innerHTML += `
+            <div class="bloque-acciones-fila">
+                <button class="btn-accion-historial" onclick="abrirHistorialSucursal(${index})" title="Ver Historial de Ventas">
+                    <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                </button>
+                <button class="btn-accion-eliminar" onclick="eliminarSucursal(${index})" title="Eliminar Sucursal">
+                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+                <button class="btn-accion-flecha" onclick="irDetalleSucursal(${index})" title="Ver Detalles">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14v-4H7v-2h4V8l5 4-5 4z"/></svg>
+                </button>
+            </div>
+        `;
+    });
+}
+
+function alternarEdicionSucursales() {
+    const btn = document.getElementById('btn-control-sucursales');
+    
+    if (!modoEdicion) {
+        modoEdicion = true;
+        btn.textContent = "Guardar";
+        btn.style.background = "#2e7d32";
+        cargarTablaSucursales();
+    } else {
+        let baseDatosSucursales = JSON.parse(localStorage.getItem('datosSucursalesAngelotes'));
+        const inputs = document.querySelectorAll('#cuerpo-tabla-sucursales input');
+        
+        inputs.forEach(input => {
+            const idx = input.getAttribute('data-index');
+            const campo = input.getAttribute('data-campo');
+            baseDatosSucursales[idx][campo] = input.value.trim();
+        });
+
+        localStorage.setItem('datosSucursalesAngelotes', JSON.stringify(baseDatosSucursales));
+        
+        modoEdicion = false;
+        btn.textContent = "Editar";
+        btn.style.background = "#1c1c1c";
+        cargarTablaSucursales();
+        alert("✔️ Datos de las sucursales actualizados con éxito.");
+    }
+}
+
+function agregarNuevaSucursal() {
+    let nombre = prompt("Ingrese el nombre de la nueva sucursal:");
+    if (!nombre || nombre.trim() === "") return;
+
+    let baseDatosSucursales = JSON.parse(localStorage.getItem('datosSucursalesAngelotes')) || [];
+    baseDatosSucursales.push({
+        nombre: nombre.trim(), ubicacion: "", encargado: "", contacto: "", ventas: "", ganancias: "", cant_ventas: "", rendimiento: ""
+    });
+
+    localStorage.setItem('datosSucursalesAngelotes', JSON.stringify(baseDatosSucursales));
+    cargarTablaSucursales();
+}
+
+function eliminarSucursal(index) {
+    let baseDatosSucursales = JSON.parse(localStorage.getItem('datosSucursalesAngelotes'));
+    let sucursal = baseDatosSucursales[index];
+
+    if (confirm(`¿Está seguro de que desea eliminar permanentemente la sucursal "${sucursal.nombre}" junto con todo su historial de ventas?`)) {
+        baseDatosSucursales.splice(index, 1);
+        localStorage.setItem('datosSucursalesAngelotes', JSON.stringify(baseDatosSucursales));
+        localStorage.removeItem(`historial_sucursal_${index}`);
+
+        for (let i = index + 1; i <= baseDatosSucursales.length + 1; i++) {
+            let datosH = localStorage.getItem(`historial_sucursal_${i}`);
+            if (datosH) {
+                localStorage.setItem(`historial_sucursal_${i - 1}`, datosH);
+                localStorage.removeItem(`historial_sucursal_${i}`);
+            }
+        }
+
+        modoEdicion = false;
+        document.getElementById('btn-control-sucursales').textContent = "Editar";
+        document.getElementById('btn-control-sucursales').style.background = "#1c1c1c";
+        cargarTablaSucursales();
+    }
+}
+
+function irDetalleSucursal(index) {
+    const paginas = ["DETALLE_ANGELOTES.html", "DETALLE_CENTRO.html", "DETALLE_ZONADORADA.html"];
+    if(index < paginas.length) {
+        window.location.href = paginas[index];
+    } else {
+        alert("Página de detalles específica en desarrollo para esta nueva sucursal.");
+    }
+}
+
+/* ====== LÓGICA DE HISTORIALES PERSONALIZADOS POR SUCURSAL ====== */
+function abrirHistorialSucursal(index) {
+    sucursalSeleccionadaIdx = index;
+    let baseDatosSucursales = JSON.parse(localStorage.getItem('datosSucursalesAngelotes'));
+    let sucursal = baseDatosSucursales[index];
+
+    document.getElementById('titulo-modal-historial').textContent = `Historial de Ventas - ${sucursal.nombre}`;
+    
+    const hoy = new Date();
+    semanaActualModalKey = obtenerStringSemana(hoy);
+    document.getElementById('modal-selector-semana').value = semanaActualModalKey;
+    
+    renderizarHistorialModal();
+    document.getElementById('modalHistorialSucursal').style.display = "flex";
+}
+
+function cerrarModalHistorial() {
+    document.getElementById('modalHistorialSucursal').style.display = "none";
+    sucursalSeleccionadaIdx = null;
+}
+
+function cambiarSemanaModal(codigoSemana) {
+    if(!codigoSemana) return;
+    semanaActualModalKey = codigoSemana;
+    renderizarHistorialModal();
+}
+
+function renderizarHistorialModal() {
+    let registrosGlobales = JSON.parse(localStorage.getItem(`historial_sucursal_${sucursalSeleccionadaIdx}`)) || {};
+    const fechasDeLaSemana = calcularFechasDeSemana(semanaActualModalKey);
+    
+    document.getElementById('modal-etiqueta-mes').textContent = fechasDeLaSemana.mesAñoLabel;
+
+    if (!registrosGlobales[semanaActualModalKey]) {
+        registrosGlobales[semanaActualModalKey] = nombresDias.map((dia, idx) => ({
+            dia_label: `${dia}/${fechasDeLaSemana.dias[idx]}`,
+            total_ventas: "", cant_productos: "", gastos: "", ganancias: "", ingresos_netos: "", inventario: "", promedio1: "", promedio2: ""
+        }));
+        localStorage.setItem(`historial_sucursal_${sucursalSeleccionadaIdx}`, JSON.stringify(registrosGlobales));
+    }
+
+    const registrosSemana = registrosGlobales[semanaActualModalKey];
+    const tbody = document.getElementById('modal-cuerpo-tabla');
+    tbody.innerHTML = "";
+
+    registrosSemana.forEach((item, index) => {
+        let diaTextoActualizado = `${nombresDias[index]}/${fechasDeLaSemana.dias[index]}`;
+        tbody.innerHTML += `
+            <tr>
+                <td class="col-dia">${diaTextoActualizado}</td>
+                <td><input type="text" data-idx="${index}" data-campo="total_ventas" value="${item.total_ventas}"></td>
+                <td><input type="text" data-idx="${index}" data-campo="cant_productos" value="${item.cant_productos}"></td>
+                <td><input type="text" data-idx="${index}" data-campo="gastos" value="${item.gastos}"></td>
+                <td><input type="text" data-idx="${index}" data-campo="ganancias" value="${item.ganancias}"></td>
+                <td><input type="text" data-idx="${index}" data-campo="ingresos_netos" value="${item.ingresos_netos}"></td>
+                <td><input type="text" data-idx="${index}" data-campo="inventario" value="${item.inventario}"></td>
+                <td><input type="text" data-idx="${index}" data-campo="promedio1" value="${item.promedio1}"></td>
+                <td><input type="text" data-idx="${index}" data-campo="promedio2" value="${item.promedio2}"></td>
+            </tr>
+        `;
+    });
+}
+
+function guardarHistorialModal() {
+    let registrosGlobales = JSON.parse(localStorage.getItem(`historial_sucursal_${sucursalSeleccionadaIdx}`));
+    const inputs = document.querySelectorAll('#modal-cuerpo-tabla input');
+    
+    inputs.forEach(input => {
+        const idx = input.getAttribute('data-idx');
+        const campo = input.getAttribute('data-campo');
+        registrosGlobales[semanaActualModalKey][idx][campo] = input.value.trim();
+    });
+
+    localStorage.setItem(`historial_sucursal_${sucursalSeleccionadaIdx}`, JSON.stringify(registrosGlobales));
+    alert("✔️ Historial de la sucursal guardado correctamente.");
+}
+
+/* ====== UTILERÍA DE FECHAS ====== */
+function obtenerStringSemana(d) {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    const weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+    return `${d.getUTCFullYear()}-W${weekNo.toString().padStart(2, '0')}`;
+}
+
+function calcularFechasDeSemana(semanaStr) {
+    const partes = semanaStr.split("-W");
+    const anio = parseInt(partes[0], 10);
+    const semana = parseInt(partes[1], 10);
+    const primereDiaAnio = new Date(anio, 0, 1);
+    const diasMas = (semana - 1) * 7;
+    const diaSemanaInic = primereDiaAnio.getDay();
+    const ajusteLunes = diaSemanaInic <= 4 ? 1 - diaSemanaInic : 8 - diaSemanaInic;
+    const lunesTarget = new Date(anio, 0, 1 + diasMas + ajusteLunes);
+    
+    let diasArray = [];
+    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+    for (let i = 0; i < 7; i++) {
+        let tempDate = new Date(lunesTarget);
+        tempDate.setDate(lunesTarget.getDate() + i);
+        diasArray.push(tempDate.getDate().toString().padStart(2, '0'));
+    }
+    return {
+        dias: diasArray,
+        mesAñoLabel: `${meses[lunesTarget.getMonth()]} ${lunesTarget.getFullYear()}`
+    };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Elotes y Esquites</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    overflow:hidden;
+}
+
+/* ====== BARRA SUPERIOR ====== */
+header{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:#2f2f2f;
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    z-index:1000; /* Prioridad alta para que siempre esté por encima del fondo */
+}
+
+/* ====== LOGO ====== */
+.logo{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    height:100%;
+    margin-left:-15px;
+}
+
+.logo a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.logo img{
+    height:240px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+    transform:translateY(22px);
+    cursor:pointer;
+}
+
+/* ====== MENÚ ====== */
+nav{
+    margin-left:auto;
+    margin-right:50px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:60px;
+}
+
+nav ul li a{
+    position:relative;
+    color:#fff;
+    text-decoration:none;
+    font-size:18px;
+    font-weight:bold;
+    padding-bottom:6px;
+    transition:.3s;
+}
+
+/* Barra amarilla */
+nav ul li a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:0;
+    height:3px;
+    background:#c89b2b;
+    transition:.3s;
+}
+
+/* Efecto hover */
+nav ul li a:hover::after{
+    width:100%;
+}
+
+nav ul li a:hover{
+    color:#c89b2b;
+    text-shadow:0 0 10px #f4d35e;
+}
+
+/* ====== LOGIN ====== */
+.usuario{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.usuario a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.usuario img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.usuario img:hover{
+    transform:scale(1.1);
+}
+
+/* ====== FONDO ====== */
+.hero{
+    width:100%;
+    height:100vh;
+    background-image:url("fondo.jpg");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    position: relative;
+    z-index: 1; /* Fondo por detrás para dejar libre el menú y el login */
+}
+</style>
+
+</head>
+<body>
+
+<header>
+
+    <div class="logo">
+        <a href="PAGINA PRINCIPAL.html">
+            <img src="logo.png" alt="Logo">
+        </a>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="MENU.html">MENÚ</a></li>
+            <li><a href="CONTACTO.html">CONTACTO</a></li>
+            <li><a href="UBICACION.html">UBICACIÓN</a></li>
+        </ul>
+    </nav>
+
+    <div class="usuario">
+        <a href="LOGIN.html">
+            <img src="login.png" alt="Login">
+        </a>
+    </div>
+
+</header>
+
+<section class="hero"></section>
+
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Pasarela de Pago</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    filter: blur(8px);
+    z-index: 1;
+    transform: scale(1.1);
+}
+
+.ventana-pago {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    text-align: center;
+}
+
+.ventana-pago h2 {
+    font-size: 26px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.linea-dorada {
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c89b2b 30%, #c89b2b 70%, transparent);
+    margin: 0 auto 30px auto;
+}
+
+.instruccion {
+    font-size: 15px;
+    color: #ccc;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.opciones-contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tarjeta-opcion {
+    background: rgba(28, 28, 28, 0.8);
+    border: 2px solid #333;
+    border-radius: 6px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.tarjeta-opcion.activa:hover {
+    border-color: #c89b2b;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(200, 155, 43, 0.2);
+}
+
+.tarjeta-opcion.inactiva {
+    opacity: 0.7;
+}
+
+.tarjeta-opcion.inactiva:hover {
+    border-color: #ff4444;
+}
+
+.info-pago {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.info-pago .icono {
+    font-size: 24px;
+    color: #c89b2b;
+}
+
+.info-pago div {
+    text-align: left;
+}
+
+.info-pago h4 {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.info-pago p {
+    font-size: 12px;
+    color: #aaa;
+}
+
+.flecha {
+    font-size: 18px;
+    color: #666;
+    transition: 0.3s;
+}
+
+.tarjeta-opcion.activa:hover .flecha {
+    color: #c89b2b;
+    transform: translateX(5px);
+}
+
+.mensaje-alerta {
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.mensaje-alerta.error { color: #ff4444; }
+
+.btn-cancelar {
+    display: inline-block;
+    margin-top: 30px;
+    color: #aaa;
+    text-decoration: none;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.btn-cancelar:hover { color: #fff; text-decoration: underline; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<main class="ventana-pago" id="caja-pago">
+    <h2>Método de Pago</h2>
+    <div class="linea-dorada"></div>
+    <p class="instruccion">Selecciona cómo deseas finalizar tu pedido</p>
+
+    <div class="opciones-contenedor">
+        <div class="tarjeta-opcion inactiva" onclick="mostrarProximamente()">
+            <div class="info-pago">
+                <span class="icono">💳</span>
+                <div>
+                    <h4>Tarjeta de Crédito / Débito</h4>
+                    <p>Visa, Mastercard, American Express</p>
+                </div>
+            </div>
+            <span class="flecha">➔</span>
+        </div>
+
+        <div class="tarjeta-opcion activa" onclick="procesarEfectivo()">
+            <div class="info-pago">
+                <span class="icono">💵</span>
+                <div>
+                    <h4>Efectivo en Entrega</h4>
+                    <p>Paga al recibir tu pedido en casa</p>
+                </div>
+            </div>
+            <span class="flecha">➔</span>
+        </div>
+    </div>
+
+    <div id="alerta-sistema" class="mensaje-alerta"></div>
+    <a href="CARRITO.html" class="btn-cancelar">Volver al Carrito</a>
+</main>
+
+<script>
+const alerta = document.getElementById('alerta-sistema');
+const cajaPago = document.getElementById('caja-pago');
+
+function mostrarProximamente() {
+    alerta.className = "mensaje-alerta error";
+    alerta.innerText = "⚠️ Estamos trabajando en ello. ¡Próximamente disponible!";
+    alerta.style.display = "block";
+    setTimeout(() => { alerta.style.display = "none"; }, 3000);
+}
+
+function procesarEfectivo() {
+    // 1. Obtener carrito actual y datos del usuario
+    let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+    let usuarioActual = localStorage.getItem('usuarioActual') || 'Invitado';
+
+    if (carrito.length > 0) {
+        // Calcular el total de este pedido específico
+        let totalPedido = carrito.reduce((sum, prod) => sum + (prod.precio * prod.cantidad), 0);
+        
+        // Estructurar el nuevo pedido
+        let nuevoPedido = {
+            id: "ANG-" + Math.floor(1000 + Math.random() * 9000),
+            usuario: usuarioActual,
+            items: carrito, // Aquí guardamos qué pidieron exactamente
+            total: totalPedido, // Aquí guardamos el total de dinero
+            estado: "🛵 En Camino",
+            tiempo: "25 - 35 min"
+        };
+
+        // Guardar en la base de datos global de pedidos
+        let pedidosExistentes = JSON.parse(localStorage.getItem('pedidosAngelotes')) || [];
+        pedidosExistentes.push(nuevoPedido);
+        localStorage.setItem('pedidosAngelotes', JSON.stringify(pedidosExistentes));
+    }
+
+    // 2. Animación de Éxito
+    alerta.style.display = "none";
+    cajaPago.innerHTML = `
+        <h2 style="color: #c89b2b; font-size: 30px; margin-bottom: 15px;">¡Gracias por tu compra!</h2>
+        <div class="linea-dorada"></div>
+        <span style="font-size: 50px; display: block; margin-bottom: 20px;">🛵✨</span>
+        <p style="font-size: 16px; line-height: 1.6; color: #fff; text-transform: uppercase; letter-spacing: 1px;">
+            Tu pedido de Angelotes ha sido registrado.<br>Prepárate para disfrutar del mejor sabor.
+        </p>
+        <p style="font-size: 12px; color: #aaa; margin-top: 30px;">
+            Redirigiéndote a la página principal...
+        </p>
+    `;
+
+    // 3. Limpiar carrito de compras
+    localStorage.removeItem('carritoAngelotes');
+
+    setTimeout(() => {
+        window.location.href = "PAGINA PRINCIPAL.html";
+    }, 4000);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Tu Carrito</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    min-height: 100vh;
+}
+
+/* ====== BARRA SUPERIOR ====== */
+header{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:#2f2f2f;
+    display:flex;
+    align-items:center;
+    padding:0 20px;
+    z-index:1000;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    height:100%;
+    margin-left:-15px;
+}
+
+.logo a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.logo img{
+    height:240px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+    transform:translateY(22px);
+    cursor:pointer;
+}
+
+nav{
+    margin-left:auto;
+    margin-right:40px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:60px;
+}
+
+nav ul li a{
+    position:relative;
+    color:#fff;
+    text-decoration:none;
+    font-size:18px;
+    font-weight:bold;
+    padding-bottom:6px;
+    transition:.3s;
+}
+
+nav ul li a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:0;
+    height:3px;
+    background:#c89b2b;
+    transition:.3s;
+}
+
+nav ul li a:hover::after{ width:100%; }
+nav ul li a:hover{ color:#c89b2b; text-shadow:0 0 10px #f4d35e; }
+
+.iconos-derecha{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.iconos-derecha img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.iconos-derecha img:hover{ transform:scale(1.1); }
+
+/* ====== SECCIÓN PRINCIPAL ====== */
+.contenedor-carrito {
+    max-width: 1200px;
+    margin: 120px auto 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    position: relative;
+    z-index: 2;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    filter: blur(5px);
+    z-index: 1;
+}
+
+/* ====== LISTA DE PRODUCTOS ====== */
+.panel-productos {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 6px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-productos h2 {
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #1c1c1c;
+    padding-bottom: 10px;
+}
+
+.tabla-carrito {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-carrito th {
+    text-align: left;
+    background: #1c1c1c;
+    padding: 12px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tabla-carrito td {
+    padding: 20px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    vertical-align: middle;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.item-info img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.2);
+}
+
+.item-detalles h4 {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.item-detalles span {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.control-cantidad {
+    display: flex;
+    align-items: center;
+    border: 2px solid #1c1c1c;
+    width: fit-content;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.control-cantidad button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.control-cantidad button:hover { background: #1c1c1c; }
+.control-cantidad span { width: 35px; text-align: center; font-weight: bold; font-size: 15px; }
+
+.btn-eliminar {
+    background: transparent;
+    border: none;
+    color: #ff4444;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.btn-eliminar:hover { text-decoration: underline; }
+
+.carrito-vacio-msg {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 18px;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ====== RESUMEN DEL PEDIDO ====== */
+.panel-resumen {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 6px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    height: fit-content;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel-resumen h3 {
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #1c1c1c;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.fila-resumen {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fila-resumen.total {
+    border-top: 2px solid #1c1c1c;
+    padding-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.btn-pagar {
+    width: 100%;
+    background: #1c1c1c;
+    color: #fff;
+    border: none;
+    padding: 16px 0;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 15px;
+    transition: 0.3s;
+}
+.btn-pagar:hover { background: #2a2a2a; }
+
+.btn-seguir-comprando {
+    display: block;
+    text-align: center;
+    color: #1c1c1c;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 20px;
+    letter-spacing: 0.5px;
+}
+.btn-seguir-comprando:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+    .contenedor-carrito { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo"><a href="PAGINA PRINCIPAL.html"><img src="logo.png" alt="Logo"></a></div>
+    <nav>
+        <ul>
+            <li><a href="MENU.html">MENÚ</a></li>
+            <li><a href="CONTACTO.html">CONTACTO</a></li>
+            <li><a href="UBICACION.html">UBICACIÓN</a></li>
+        </ul>
+    </nav>
+    <div class="iconos-derecha">
+        <a href="LOGIN.html"><img src="login.png" alt="Login"></a>
+        <a href="CARRITO.html"><img src="carrito.png" alt="Carrito"></a>
+    </div>
+</header>
+
+<main class="contenedor-carrito">
+    
+    <section class="panel-productos">
+        <h2>Tu Pedido</h2>
+        <table class="tabla-carrito" id="tabla-control">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="items-carrito">
+                <!-- Se rellena automáticamente con Javascript -->
+            </tbody>
+        </table>
+        <div id="carrito-vacio" class="carrito-vacio-msg" style="display:none;">Tu carrito está vacío</div>
+    </section>
+
+    <section class="panel-resumen">
+        <h3>Resumen</h3>
+        <div class="fila-resumen">
+            <span>Subtotal</span>
+            <span id="resumen-subtotal">$0.00</span>
+        </div>
+        <div class="fila-resumen">
+            <span>Envío</span>
+            <span>Gratis</span>
+        </div>
+        <div class="fila-resumen total">
+            <span>Total</span>
+            <span id="resumen-total">$0.00</span>
+        </div>
+        <button class="btn-pagar" onclick="procesarPago()">Proceder al Pago</button>
+        <a href="MENU.html" class="btn-seguir-comprando">Volver al Menú</a>
+    </section>
+
+</main>
+
+<script>
+// Cargar los productos guardados en el almacenamiento al abrir la página
+let carrito = JSON.parse(localStorage.getItem('carritoAngelotes')) || [];
+
+function renderizarCarrito() {
+    const tbody = document.getElementById('items-carrito');
+    const tabla = document.getElementById('tabla-control');
+    const mensajeVacio = document.getElementById('carrito-vacio');
+    
+    tbody.innerHTML = '';
+    
+    if (carrito.length === 0) {
+        tabla.style.display = 'none';
+        mensajeVacio.style.display = 'block';
+        actualizarTotales(0);
+        return;
+    }
+    
+    tabla.style.display = 'table';
+    mensajeVacio.style.display = 'none';
+    
+    let granTotal = 0;
+
+    carrito.forEach((producto, index) => {
+        const subtotalProducto = producto.precio * producto.cantidad;
+        granTotal += subtotalProducto;
+
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>
+                <div class="item-info">
+                    <img src="${producto.imagen || 'logo.png'}" alt="${producto.nombre}">
+                    <div class="item-detalles">
+                        <h4>${producto.nombre}</h4>
+                        <span>Precio unitario: $${producto.precio.toFixed(2)}</span>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="control-cantidad">
+                    <button onclick="alterarCantidad(${index}, -1)">-</button>
+                    <span>${producto.cantidad}</span>
+                    <button onclick="alterarCantidad(${index}, 1)">+</button>
+                </div>
+            </td>
+            <td>$${subtotalProducto.toFixed(2)}</td>
+            <td><button class="btn-eliminar" onclick="eliminarProducto(${index})">Eliminar</button></td>
+        `;
+        tbody.appendChild(fila);
+    });
+
+    actualizarTotales(granTotal);
+}
+
+function alterarCantidad(index, cambio) {
+    carrito[index].cantidad += cambio;
+    
+    if (carrito[index].cantidad < 1) {
+        carrito[index].cantidad = 1;
+    }
+    
+    guardarYRenderizar();
+}
+
+function eliminarProducto(index) {
+    carrito.splice(index, 1);
+    guardarYRenderizar();
+}
+
+function guardarYRenderizar() {
+    localStorage.setItem('carritoAngelotes', JSON.stringify(carrito));
+    renderizarCarrito();
+}
+
+function actualizarTotales(total) {
+    document.getElementById('resumen-subtotal').innerText = `$${total.toFixed(2)}`;
+    document.getElementById('resumen-total').innerText = `$${total.toFixed(2)}`;
+}
+
+function procesarPago() {
+    if(carrito.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+    }
+
+    // CONTROL DE REDIRECCIÓN: Verifica si el usuario ha iniciado sesión antes de pagar
+    if (localStorage.getItem("sesionActiva") !== "true") {
+        alert("Para realizar el pedido, por favor inicia sesión o crea una cuenta.");
+        localStorage.setItem("redirigirAlCarrito", "true"); // Le dice a LOGIN.html que regrese aquí al tener éxito
+        location.href = "LOGIN.html";
+    } else {
+        // MEJORA: Redirección directa a tu nueva pantalla de pasarela de pago (PAGO.html)
+        location.href = "PAGO.html";
+    }
+}
+
+// Ejecutar al cargar la página
+renderizarCarrito();
+</script>
+
+</body>
+</html>

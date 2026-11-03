@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Modo Administrador</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow-x:hidden;
+    padding-top: 110px; /* Espacio para la barra superior doble */
+}
+
+/* ====== BARRA SUPERIOR DOBLE (MODO ADMIN) ====== */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.barra-principal {
+    height: 60px;
+    background: #2f2f2f;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+}
+
+/* Sub-barra negra */
+.barra-modo-admin {
+    height: 25px;
+    background: #000000;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #c89b2b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.barra-modo-admin p {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    height:100%;
+    margin-left:-15px;
+}
+
+.logo a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.logo img{
+    height:240px;
+    width:auto;
+    object-fit:contain;
+    display:block;
+    transform:translateY(22px);
+    cursor:pointer;
+}
+
+nav{
+    margin-left:auto;
+    margin-right:40px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+    gap:50px;
+}
+
+nav ul li a{
+    position:relative;
+    color:#fff;
+    text-decoration:none;
+    font-size:16px;
+    font-weight:bold;
+    padding-bottom:6px;
+    transition:.3s;
+    text-transform: uppercase;
+}
+
+nav ul li a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:0;
+    width:0;
+    height:3px;
+    background:#c89b2b;
+    transition:.3s;
+}
+
+nav ul li a:hover::after{ width:100%; }
+nav ul li a:hover { color:#c89b2b; text-shadow:0 0 10px #f4d35e; }
+
+/* ====== ICONOS DERECHOS ====== */
+.iconos-derecha{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.iconos-derecha a{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+
+.iconos-derecha img{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.iconos-derecha img:hover{ transform:scale(1.1); }
+
+/* ====== PORTADA Y FONDO IDÉNTICO ====== */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("fondo.jpg");
+    background-size: cover;
+    background-position: center;
+    filter: blur(8px);
+    z-index: 1;
+    transform: scale(1.1);
+}
+
+.contenedor-auth {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    margin-top: 40px;
+}
+
+.contenedor-auth h2 {
+    font-size: 26px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.linea-dorada {
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #c89b2b 30%, #c89b2b 70%, transparent);
+    margin: 0 auto 25px auto;
+}
+
+.btn-accion {
+    width: 100%;
+    background: #1c1c1c;
+    color: #fff;
+    border: none;
+    padding: 14px 0;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 15px;
+    transition: 0.3s;
+}
+.btn-accion:hover { background: #2a2a2a; color: #c89b2b; }
+
+.btn-cerrar { background: #8b2525; }
+.btn-cerrar:hover { background: #b83232; color: #fff; }
+</style>
+</head>
+<body>
+
+<header>
+    <!-- Barra Superior 1 -->
+    <div class="barra-principal">
+        <div class="logo"><a href="ADMIN.html"><img src="logo.png" alt="Logo"></a></div>
+        <nav>
+            <ul>
+                <!-- Enlaces corregidos a los documentos físicos independientes -->
+                <li><a href="RECETAS.html">RECETAS</a></li>
+                <li><a href="HISTORIAL.html">HISTORIAL</a></li>
+                <li><a href="PEDIDOS.html">PEDIDOS</a></li>
+            </ul>
+        </nav>
+        <div class="iconos-derecha">
+            <a href="LOGIN.html"><img src="login.png" alt="Perfil Admin"></a>
+        </div>
+    </div>
+    
+    <!-- Barra Superior 2 -->
+    <div class="barra-modo-admin">
+        <p>Modo Administrador</p>
+    </div>
+</header>
+
+<!-- PORTADA DE INICIO DEL MODO ADMINISTRADOR -->
+<main class="contenedor-auth">
+    <h2>Panel de Control</h2>
+    <div class="linea-dorada"></div>
+    
+    <p style="font-size: 16px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+        Sesión de Administrador Activa:<br>
+        <strong style="color: #c89b2b;" id="nombre-admin">Admin</strong>
+    </p>
+
+    <p style="color: #ccc; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">
+        Desde las pestañas superiores podrás gestionar tus recetas, revisar el historial de ventas y dar seguimiento a los pedidos entrantes.
+    </p>
+
+    <button class="btn-accion btn-cerrar" onclick="cerrarSesionAdmin()">Cerrar Sesión Admin</button>
+</main>
+
+<script>
+// Filtro de seguridad obligatorio
+if (localStorage.getItem('esAdmin') !== 'true' || localStorage.getItem('sesionActiva') !== 'true') {
+    alert("❌ Acceso denegado. Esta área es exclusiva para Administradores de Angelotes.");
+    window.location.href = "LOGIN.html";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const usuarioLogueado = localStorage.getItem('usuarioActual') || "Administrador";
+    document.getElementById('nombre-admin').textContent = usuarioLogueado;
+});
+
+function cerrarSesionAdmin() {
+    localStorage.removeItem('sesionActiva');
+    localStorage.removeItem('usuarioActual');
+    localStorage.removeItem('esAdmin');
+    window.location.href = "LOGIN.html";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angelotes - Control de Almacén Dinámico</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#000;
+    color:#fff;
+    min-height: 100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    overflow-x:hidden;
+    padding-top: 150px; 
+}
+
+/* ====== BARRA SUPERIOR TRIPLE ====== */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.barra-principal {
+    height: 60px;
+    background: #2f2f2f;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.barra-modo-admin {
+    height: 25px;
+    background: #000000;
+    border-top: 1px solid #1a1a1a;
+    border-bottom: 1px solid #c89b2b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.barra-modo-admin p {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.barra-subnavegacion {
+    height: 45px;
+    background: #232323;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    border-bottom: 1px solid #111;
+    padding: 0 10%;
+}
+
+.barra-subnavegacion a {
+    color: #aaa;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: 0.2s;
+}
+
+.barra-subnavegacion a:hover { color: #fff; }
+.barra-subnavegacion a.sub-activo { color: #fff; }
+.barra-subnavegacion a.sub-activo::after {
+    content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: #dfb142;
+}
+
+.logo{
+    display:flex; align-items:center; justify-content:flex-start; height:100%; margin-left:-15px;
+}
+.logo a{ display:flex; align-items:center; text-decoration:none; }
+.logo img{
+    height:240px; width:auto; object-fit:contain; display:block; transform:translateY(22px); cursor:pointer;
+}
+
+nav{ margin-left:auto; margin-right:40px; }
+nav ul{ display:flex; list-style:none; gap:50px; }
+nav ul li a{
+    position:relative; color:#fff; text-decoration:none; font-size:16px; font-weight:bold; padding-bottom:6px; transition:.3s; text-transform: uppercase;
+}
+nav ul li a::after{
+    content:""; position:absolute; left:0; bottom:0; width:0; height:3px; background:#c89b2b; transition:.3s;
+}
+nav ul li a:hover::after{ width:100%; }
+nav ul li a:hover, nav ul li.activo a{ color:#c89b2b; text-shadow:0 0 10px #f4d35e; }
+nav ul li.activo a::after{ width:100%; }
+
+.iconos-derecha{ display:flex; align-items:center; gap:15px; }
+.iconos-derecha img{ width:55px; height:55px; object-fit:contain; cursor:pointer; transition:.3s; }
+.iconos-derecha img:hover{ transform:scale(1.1); }
+
+/* ====== INTERFAZ DEL ALMACEN ====== */
+.seccion-almacen {
+    width: 100%;
+    max-width: 1350px;
+    padding: 20px;
+    z-index: 2;
+    margin-top: 10px;
+}
+
+.contenedor-almacen {
+    background: #d1d1d1;
+    border-radius: 12px;
+    padding: 30px 25px;
+    color: #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.contenedor-almacen h1 {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    color: #000;
+}
+
+.filtros-superiores {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 25px;
+    background: rgba(0,0,0,0.05);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.control-grupo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-grupo label {
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.control-grupo select {
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    border: 3px solid #000;
+    background: #fff;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Panel de Estructura (Filas y Columnas) */
+.panel-estructura {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    background: rgba(0,0,0,0.08);
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.btn-estructura {
+    background: #c89b2b;
+    color: #000;
+    border: 2px solid #000;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.btn-estructura:hover {
+    background: #000;
+    color: #fff;
+}
+
+.titulo-tabla {
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 20px 0 10px 0;
+    border-left: 5px solid #dfb142;
+    padding-left: 10px;
+}
+
+.tabla-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.tabla-almacen {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 4px solid #000000;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tabla-almacen th {
+    background: #dfb142;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 13px;
+    padding: 12px 8px;
+    border: 2px solid #000000;
+    text-align: center;
+}
+
+.tabla-almacen td {
+    border: 2px solid #000000;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    height: 48px;
+    background: #fff;
+}
+
+.tabla-almacen td.col-producto {
+    background: #1c1c1c;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    width: 220px;
+}
+
+.tabla-almacen input {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+    outline: none;
+}
+.tabla-almacen input:focus {
+    background: rgba(223, 177, 66, 0.2);
+}
+
+.pie-controles {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn-accion {
+    background: #1c1c1c;
+    color: #fff;
+    border: none;
+    padding: 11px 35px;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+}
+.btn-accion:hover {
+    background: #dfb142;
+    color: #000;
+}
+
+/* ====== SECCIÓN DE FIRMAS ====== */
+.contenedor-firmas {
+    display: none;
+    margin-top: 60px;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 50px;
+}
+.bloque-firma {
+    text-align: center;
+    width: 40%;
+}
+.linea-firma {
+    border-top: 2px solid #000;
+    margin-bottom: 8px;
+    width: 100%;
+}
+.bloque-firma p {
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #000;
+}
+
+/* ====== IMPRESIÓN ====== */
+@media print {
+    body { background: #fff; color: #000; padding-top: 0; }
+    header, .filtros-superiores, .panel-estructura, .pie-controles, nav, .iconos-derecha { display: none !important; }
+    .seccion-almacen { margin-top: 0; padding: 0; }
+    .contenedor-almacen { background: #fff; box-shadow: none; padding: 0; }
+    .contenedor-almacen h1 { color: #000; font-size: 24px; }
+    .tabla-almacen th { background: #dfb142 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .tabla-almacen td.col-producto { background: #1c1c1c !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .contenedor-firmas { display: flex !important; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="barra-principal">
+        <div class="logo"><a href="ADMIN.html"><img src="logo.png" alt="Logo"></a></div>
+        <nav>
+            <ul>
+                <li><a href="RECETAS.html">RECETAS</a></li>
+                <li class="activo"><a href="HISTORIAL.html">HISTORIAL</a></li>
+                <li><a href="PEDIDOS.html">PEDIDOS</a></li>
+            </ul>
+        </nav>
+        <div class="iconos-derecha">
+            <a href="LOGIN.html"><img src="login.png" alt="Perfil Admin"></a>
+        </div>
+    </div>
+    <div class="barra-modo-admin">
+        <p>Modo Administrador</p>
+    </div>
+    <div class="barra-subnavegacion">
+        <a href="ALMACEN.html" class="sub-activo">ALMACEN</a>
+        <a href="HVENTAS.html">HISTORIAL DE VENTAS</a>
+        <a href="SUCURSALES.html">SUCURSALES</a>
+    </div>
+</header>
+
+<main class="seccion-almacen">
+    <div class="contenedor-almacen">
+        <h1 id="titulo-principal-almacen">Inventario Diario: Almacén General</h1>
+        
+        <div class="filtros-superiores">
+            <div class="control-grupo">
+                <label for="selector-vista">Seleccionar Almacén:</label>
+                <select id="selector-vista" onchange="cambiarVistaAlmacen(this.value)">
+                    <option value="general">📦 Almacén General</option>
+                    <option value="0">🏪 Angelotes</option>
+                    <option value="1">🏪 Angelotes Centro</option>
+                    <option value="2">🏪 Angelotes Zona Dorada</option>
+                    <option value="restante">✨ Inventario Restante (Cálculo)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- PANEL DINÁMICO DE FILAS Y COLUMNAS -->
+        <div class="panel-estructura" id="panel-modificadores">
+            <button class="btn-estructura" onclick="agregarColumna()">➕ Añadir Columna</button>
+            <button class="btn-estructura" onclick="eliminarColumna()">❌ Eliminar Columna</button>
+            <button class="btn-estructura" onclick="agregarProducto()">➕ Añadir Producto/Fila</button>
+            <button class="btn-estructura" onclick="eliminarProducto()">❌ Eliminar Producto/Fila</button>
+        </div>
+
+        <!-- TABLA INICIO DE DÍA -->
+        <div class="titulo-tabla" id="subtitulo-tabla-inicio">Inventario</div>
+        <div class="tabla-wrapper">
+            <table class="tabla-almacen" id="tabla-inicio-completa">
+                <thead id="cabecera-tabla-inicio">
+                    <!-- Dinámico -->
+                </thead>
+                <tbody id="cuerpo-tabla-inicio">
+                    <!-- Dinámico -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TABLA FIN DE DÍA -->
+        <div id="contenedor-bloque-fin" style="display:none;">
+            <div class="titulo-tabla">Inventario Fin de Día</div>
+            <div class="tabla-wrapper">
+                <table class="tabla-almacen" id="tabla-fin-completa">
+                    <thead id="cabecera-tabla-fin">
+                        <!-- Dinámico -->
+                    </thead>
+                    <tbody id="cuerpo-tabla-fin">
+                        <!-- Dinámico -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FIRMAS -->
+        <div class="contenedor-firmas" id="seccion-firmas-impresion">
+            <div class="bloque-firma">
+                <div class="linea-firma"></div>
+                <p>Firma Encargado</p>
+            </div>
+            <div class="bloque-firma">
+                <div class="linea-firma"></div>
+                <p>Firma Empleado</p>
+            </div>
+        </div>
+
+        <div class="pie-controles">
+            <button class="btn-accion" id="btn-imprimir" onclick="window.print()" style="display:none; background:#8e24aa;">Imprimir Hoja</button>
+            <button class="btn-accion" id="btn-editar-almacen" onclick="alternarEdicionAlmacen()">Editar</button>
+        </div>
+    </div>
+</main>
+
+<script>
+if (localStorage.getItem('esAdmin') !== 'true' || localStorage.getItem('sesionActiva') !== 'true') {
+    alert("❌ Acceso denegado.");
+    window.location.href = "LOGIN.html";
+}
+
+let vistaActual = "general"; 
+let modoEdicionAlmacen = false;
+const totalSucursalesCount = 3;
+
+// Inicializadores por defecto de la estructura estructural global
+let columnasEstructura = JSON.parse(localStorage.getItem('almacen_columnas')) || ["Masa (kg)", "Elotes (Pzs)", "Vasos 8oz", "Vasos 12oz", "Esquites Grandes", "Mayonesa (L)", "Queso (kg)"];
+let productosEstructura = JSON.parse(localStorage.getItem('almacen_productos')) || ["Insumos Base", "Aditivos", "Empaques Especiales", "Producto Estrella", "Complementos"];
+
+// Guardar por si no existían en localStorage
+localStorage.setItem('almacen_columnas', JSON.stringify(columnasEstructura));
+localStorage.setItem('almacen_productos', JSON.stringify(productosEstructura));
+
+document.addEventListener("DOMContentLoaded", () => {
+    cargarDatosAlmacen();
+});
+
+function cambiarVistaAlmacen(opcion) {
+    modoEdicionAlmacen = false;
+    const btn = document.getElementById('btn-editar-almacen');
+    btn.textContent = "Editar";
+    btn.style.background = "#1c1c1c";
+    vistaActual = opcion;
+    cargarDatosAlmacen();
+}
+
+function generarEstructuraVacia() {
+    return productosEstructura.map(prod => {
+        let obj = { nombre: prod };
+        columnasEstructura.forEach(col => obj[col] = "");
+        return obj;
+    });
+}
+
+function cargarDatosAlmacen() {
+    const titulo = document.getElementById('titulo-principal-almacen');
+    const subtituloInicio = document.getElementById('subtitulo-tabla-inicio');
+    const bloqueFin = document.getElementById('contenedor-bloque-fin');
+    const btnImprimir = document.getElementById('btn-imprimir');
+    const btnEditar = document.getElementById('btn-editar-almacen');
+    const panelModificadores = document.getElementById('panel-modificadores');
+
+    bloqueFin.style.display = "none";
+    btnImprimir.style.display = "none";
+    btnEditar.style.display = "block";
+    panelModificadores.style.display = "flex";
+
+    // Reestablecer cabeceras dinámicas de las tablas
+    renderizarCabecera('cabecera-tabla-inicio');
+    renderizarCabecera('cabecera-tabla-fin');
+
+    let tbodyInicio = document.getElementById('cuerpo-tabla-inicio');
+    let tbodyFin = document.getElementById('cuerpo-tabla-fin');
+    tbodyInicio.innerHTML = "";
+    tbodyFin.innerHTML = "";
+
+    if (vistaActual === "general") {
+        titulo.textContent = "Inventario Diario: Almacén General";
+        subtituloInicio.textContent = "Existencias en Almacén General";
+        
+        let datosGeneral = JSON.parse(localStorage.getItem('almacen_general')) || generarEstructuraVacia();
+        datosGeneral = normalizarEstructuraData(datosGeneral);
+        localStorage.setItem('almacen_general', JSON.stringify(datosGeneral));
+
+        renderizarFilasTabla(tbodyInicio, datosGeneral, "inicio", false);
+
+    } else if (vistaActual === "restante") {
+        titulo.textContent = "Cálculo: Inventario Restante en General";
+        subtituloInicio.textContent = "Residuo Neto Calculado (General - Sucursales)";
+        btnEditar.style.display = "none";
+        panelModificadores.style.display = "none";
+
+        let datosCalculados = calcularResiduoRestante();
+        renderizarFilasTabla(tbodyInicio, datosCalculados, "inicio", true);
+
+    } else {
+        const nombres = ["Angelotes", "Angelotes Centro", "Angelotes Zona Dorada"];
+        titulo.textContent = `Inventario Diario: ${nombres[parseInt(vistaActual, 10)]}`;
+        subtituloInicio.textContent = "Inventario Inicio de Día";
+        bloqueFin.style.display = "block";
+        btnImprimir.style.display = "block";
+
+        let datosSucursal = JSON.parse(localStorage.getItem(`almacen_sucursal_${vistaActual}`)) || {
+            inicio: generarEstructuraVacia(),
+            fin: generarEstructuraVacia()
+        };
+        
+        datosSucursal.inicio = normalizarEstructuraData(datosSucursal.inicio);
+        datosSucursal.fin = normalizarEstructuraData(datosSucursal.fin);
+        localStorage.setItem(`almacen_sucursal_${vistaActual}`, JSON.stringify(datosSucursal));
+
+        renderizarFilasTabla(tbodyInicio, datosSucursal.inicio, "inicio", false);
+        renderizarFilasTabla(tbodyFin, datosSucursal.fin, "fin", false);
+    }
+}
+
+function renderizarCabecera(idCabecera) {
+    const headerElement = document.getElementById(idCabecera);
+    let html = `<tr><th style="width: 30%;">Producto</th>`;
+    columnasEstructura.forEach(col => {
+        html += `<th>${col}</th>`;
+    });
+    html += `</tr>`;
+    headerElement.innerHTML = html;
+}
+
+function normalizarEstructuraData(arrayDatos) {
+    // Asegura que el array contenga exactamente las filas y columnas vigentes del config global
+    let nuevoArray = productosEstructura.map(prod => {
+        let filaExistente = arrayDatos.find(d => d.nombre === prod);
+        let obj = { nombre: prod };
+        columnasEstructura.forEach(col => {
+            obj[col] = filaExistente ? (filaExistente[col] || "") : "";
+        });
+        return obj;
+    });
+    return nuevoArray;
+}
+
+function renderizarFilasTabla(tbody, arrayDatos, seccion, forzarSoloLectura) {
+    arrayDatos.forEach((item, index) => {
+        let filaHtml = `<tr><td class="col-producto">${item.nombre}</td>`;
+        columnasEstructura.forEach(col => {
+            let valor = item[col] || "";
+            if (modoEdicionAlmacen && !forzarSoloLectura) {
+                filaHtml += `<td><input type="number" step="any" data-index="${index}" data-campo="${col}" data-seccion="${seccion}" value="${valor}"></td>`;
+            } else {
+                filaHtml += `<td>${valor}</td>`;
+            }
+        });
+        filaHtml += `</tr>`;
+        tbody.innerHTML += filaHtml;
+    });
+}
+
+function alternarEdicionAlmacen() {
+    const btnAct = document.getElementById('btn-editar-almacen');
+    
+    if (!modoEdicionAlmacen) {
+        modoEdicionAlmacen = true;
+        btnAct.textContent = "Guardar";
+        btnAct.style.background = "#2e7d32";
+        cargarDatosAlmacen();
+    } else {
+        const inputs = document.querySelectorAll('.tabla-almacen input');
+        
+        if (vistaActual === "general") {
+            let datosGeneral = JSON.parse(localStorage.getItem('almacen_general'));
+            inputs.forEach(input => {
+                const idx = input.getAttribute('data-index');
+                const campo = input.getAttribute('data-campo');
+                datosGeneral[idx][campo] = input.value.trim();
+            });
+            localStorage.setItem('almacen_general', JSON.stringify(datosGeneral));
+        } else {
+            let datosSucursal = JSON.parse(localStorage.getItem(`almacen_sucursal_${vistaActual}`));
+            inputs.forEach(input => {
+                const idx = input.getAttribute('data-index');
+                const campo = input.getAttribute('data-campo');
+                const seccion = input.getAttribute('data-seccion');
+                datosSucursal[seccion][idx][campo] = input.value.trim();
+            });
+            localStorage.setItem(`almacen_sucursal_${vistaActual}`, JSON.stringify(datosSucursal));
+        }
+
+        modoEdicionAlmacen = false;
+        btnAct.textContent = "Editar";
+        btnAct.style.background = "#1c1c1c";
+        cargarDatosAlmacen();
+        alert("✔️ Cambios de inventario guardados exitosamente.");
+    }
+}
+
+function calcularResiduoRestante() {
+    let general = JSON.parse(localStorage.getItem('almacen_general')) || generarEstructuraVacia();
+    general = normalizarEstructuraData(general);
+
+    let restante = productosEstructura.map(prod => {
+        let obj = { nombre: prod };
+        columnasEstructura.forEach(col => obj[col] = 0);
+        return obj;
+    });
+
+    restante.forEach((prod, idx) => {
+        columnasEstructura.forEach(col => {
+            prod[col] = parseFloat(general[idx][col]) || 0;
+        });
+    });
+
+    for (let i = 0; i < totalSucursalesCount; i++) {
+        let datosSuc = JSON.parse(localStorage.getItem(`almacen_sucursal_${i}`));
+        if (datosSuc) {
+            let inicioNorm = normalizarEstructuraData(datosSuc.inicio);
+            let finNorm = normalizarEstructuraData(datosSuc.fin);
+
+            restante.forEach((prod, idx) => {
+                columnasEstructura.forEach(col => {
+                    let valInicio = parseFloat(inicioNorm[idx][col]) || 0;
+                    let valFin = parseFloat(finNorm[idx][col]) || 0;
+                    prod[col] -= (valInicio + valFin);
+                });
+            });
+        }
+    }
+
+    restante.forEach(prod => {
+        columnasEstructura.forEach(col => {
+            if (prod[col] <= 0) prod[col] = "0";
+            else prod[col] = prod[col].toFixed(1);
+        });
+    });
+
+    return restante;
+}
+
+/* ====== FUNCIONES DINÁMICAS HORIZONTALES (COLUMNAS) ====== */
+function agregarColumna() {
+    let nuevaCol = prompt("Ingrese el nombre de la nueva columna / clasificación (Ej: Vasos 16oz):");
+    if (!nuevaCol || nuevaCol.trim() === "") return;
+    nuevaCol = nuevaCol.trim();
+
+    if (columnasEstructura.includes(nuevaCol)) {
+        alert("❌ Esta columna ya existe.");
+        return;
+    }
+
+    columnasEstructura.push(nuevaCol);
+    localStorage.setItem('almacen_columnas', JSON.stringify(columnasEstructura));
+    cargarDatosAlmacen();
+}
+
+function eliminarColumna() {
+    if(columnasEstructura.length === 0) return;
+    let colEliminar = prompt(`Escriba el nombre exacto de la columna a eliminar:\nOpciones: ${columnasEstructura.join(", ")}`);
+    if (!colEliminar) return;
+    colEliminar = colEliminar.trim();
+
+    let index = columnasEstructura.indexOf(colEliminar);
+    if (index === -1) {
+        alert("❌ Nombre incorrecto. No se encontró la columna.");
+        return;
+    }
+
+    if(confirm(`¿Está seguro de eliminar la columna "${colEliminar}"? Se perderán esos datos en todas las sucursales.`)){
+        columnasEstructura.splice(index, 1);
+        localStorage.setItem('almacen_columnas', JSON.stringify(columnasEstructura));
+        cargarDatosAlmacen();
+    }
+}
+
+/* ====== FUNCIONES DINÁMICAS VERTICALES (FILAS) ====== */
+function agregarProducto() {
+    let nuevoProd = prompt("Ingrese el nombre del nuevo Producto / Fila:");
+    if (!nuevoProd || nuevoProd.trim() === "") return;
+    nuevoProd = nuevoProd.trim();
+
+    if (productosEstructura.includes(nuevoProd)) {
+        alert("❌ Este producto ya existe.");
+        return;
+    }
+
+    productosEstructura.push(nuevoProd);
+    localStorage.setItem('almacen_productos', JSON.stringify(productosEstructura));
+    cargarDatosAlmacen();
+}
+
+function eliminarProducto() {
+    if(productosEstructura.length === 0) return;
+    let prodEliminar = prompt(`Escriba el nombre exacto del producto a eliminar:\nOpciones: ${productosEstructura.join(", ")}`);
+    if (!prodEliminar) return;
+    prodEliminar = prodEliminar.trim();
+
+    let index = productosEstructura.indexOf(prodEliminar);
+    if (index === -1) {
+        alert("❌ No se encontró el producto.");
+        return;
+    }
+
+    if(confirm(`¿Está seguro de eliminar el producto "${prodEliminar}" de forma global?`)){
+        productosEstructura.splice(index, 1);
+        localStorage.setItem('almacen_productos', JSON.stringify(productosEstructura));
+        cargarDatosAlmacen();
+    }
+}
+</script>
+
+</body>
+</html>
